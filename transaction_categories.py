@@ -24,6 +24,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)the spence grocer', 'The Spence Grocer'),
     (r'(?i)mcdonalds|mcdonald\'s|maccas', 'McDonald\'s'),
     (r'(?i)millsandgrills', 'Mills and Grills'),
+    (r'(?i)dickson taphouse', 'Dickson Taphouse'),
     (r'(?i)cafe|coffee', 'Cafe'),
     (r'(?i)restaurant|dining', 'Restaurant'),
     (r'(?i)pub|tavern', 'Pub'),
@@ -62,6 +63,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     # Health
     (r'(?i)amcal|amcal pharmacy', 'Amcal Pharmacy'),
     (r'(?i)endota spa', 'Endota Spa'),
+    (r'(?i)belconnen chiro', 'Belconnen Chiropractor'),
     
     # Hardware stores
     (r'(?i)bunnings|bunnings warehouse', 'Bunnings Warehouse'),
@@ -86,17 +88,20 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)miles franklin', 'Miles Franklin'),
     (r'(?i)bounce holdings', 'Bounce Holdings'),
     (r'(?i)school|college|university|tafe', 'Educational Institution'),
+    
+    # Department stores
+    (r'(?i)harris scarfe', 'Harris Scarfe'),
 ]
 
 # Transaction categories and their keywords
 CATEGORIES: Dict[str, List[str]] = {
     'Groceries': ['woolworths', 'coles', 'aldi', 'iga', 'supermarket', 'foodworks', 'nestle', 'nestlé', 'nestleau', 'nespresso australia'],
-    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi', 'tfc sushi', 'zambrero', 'the spence grocer', 'mcdonalds', 'mcdonald\'s', 'maccas', 'millsandgrills', 'mills and grills'],
+    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi', 'tfc sushi', 'zambrero', 'the spence grocer', 'mcdonalds', 'mcdonald\'s', 'maccas', 'millsandgrills', 'mills and grills', 'dickson taphouse'],
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus'],
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek', 'hoyts'],
-    'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop', 'jb hi-fi', 'jb hifi', 'jbhifi', 'jb hi fi', 'harvey norman', 'harveynorman', 'the good guys', 'good guys', 'officeworks'],
+    'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'harris scarfe', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop', 'jb hi-fi', 'jb hifi', 'jbhifi', 'jb hi fi', 'harvey norman', 'harveynorman', 'the good guys', 'good guys', 'officeworks'],
     'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'belong', 'electricity', 'water', 'gas'],
-    'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au'],
+    'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au', 'belconnen chiro', 'belconnen chiropractor'],
     'Education': ['university', 'school', 'college', 'tafe', 'course', 'miles franklin', 'bounce holdings', 'educational institution'],
     'Insurance': ['insurance', 'budget direct', 'nrma', 'racq', 'racv', 'aami'],
     'Fuel': ['7-eleven', '7 eleven', '-eleven', 'bp', 'shell', 'caltex', 'united petroleum', 'petrol', 'service station'],
