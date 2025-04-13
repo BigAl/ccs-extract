@@ -13,11 +13,13 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)aldi', 'Aldi'),
     (r'(?i)iga', 'IGA'),
     (r'(?i)nestle|nestlé|nestleau', 'Nestlé Australia'),
+    (r'(?i)nespresso australia', 'Nespresso Australia'),
     
     # Restaurants and cafes
     (r'(?i)soul origin', 'Soul Origin'),
     (r'(?i)space kitchen', 'Space Kitchen'),
     (r'(?i)sushi sushi', 'Sushi Sushi'),
+    (r'(?i)zambrero', 'Zambrero'),
     (r'(?i)cafe|coffee', 'Cafe'),
     (r'(?i)restaurant|dining', 'Restaurant'),
     (r'(?i)pub|tavern', 'Pub'),
@@ -33,6 +35,8 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)amazon', 'Amazon'),
     (r'(?i)apple\.com|itunes', 'Apple'),
     (r'(?i)ticketek', 'Ticketek'),
+    (r'(?i)hoyts', 'Hoyts'),
+    (r'(?i)www\.endota\.com\.au', 'Endota Spa'),
     
     # Utilities
     (r'(?i)origin energy', 'Origin Energy'),
@@ -53,17 +57,18 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     
     # Health
     (r'(?i)amcal|amcal pharmacy', 'Amcal Pharmacy'),
+    (r'(?i)endota spa', 'Endota Spa'),
 ]
 
 # Transaction categories and their keywords
 CATEGORIES: Dict[str, List[str]] = {
-    'Groceries': ['woolworths', 'coles', 'aldi', 'iga', 'supermarket', 'foodworks', 'nestle', 'nestlé', 'nestleau'],
-    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi'],
+    'Groceries': ['woolworths', 'coles', 'aldi', 'iga', 'supermarket', 'foodworks', 'nestle', 'nestlé', 'nestleau', 'nespresso australia'],
+    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi', 'zambrero'],
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus'],
-    'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek'],
+    'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek', 'hoyts'],
     'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer'],
     'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'belong', 'electricity', 'water', 'gas'],
-    'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal'],
+    'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au'],
     'Education': ['university', 'school', 'college', 'tafe', 'course'],
     'Insurance': ['insurance', 'nrma', 'racq', 'racv', 'aami'],
     'Fuel': ['7-eleven', '7 eleven', '-eleven', 'bp', 'shell', 'caltex', 'united petroleum', 'petrol', 'service station'],
