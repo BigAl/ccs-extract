@@ -73,6 +73,13 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)harvey norman|harveynorman', 'Harvey Norman'),
     (r'(?i)the good guys|good guys', 'The Good Guys'),
     (r'(?i)officeworks', 'Officeworks'),
+    
+    # Insurance companies
+    (r'(?i)budget direct', 'Budget Direct'),
+    (r'(?i)nrma', 'NRMA'),
+    (r'(?i)racq', 'RACQ'),
+    (r'(?i)racv', 'RACV'),
+    (r'(?i)aami', 'AAMI'),
 ]
 
 # Transaction categories and their keywords
@@ -85,7 +92,7 @@ CATEGORIES: Dict[str, List[str]] = {
     'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'belong', 'electricity', 'water', 'gas'],
     'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au'],
     'Education': ['university', 'school', 'college', 'tafe', 'course'],
-    'Insurance': ['insurance', 'nrma', 'racq', 'racv', 'aami'],
+    'Insurance': ['insurance', 'budget direct', 'nrma', 'racq', 'racv', 'aami'],
     'Fuel': ['7-eleven', '7 eleven', '-eleven', 'bp', 'shell', 'caltex', 'united petroleum', 'petrol', 'service station'],
     'Holiday': ['hotel', 'motel', 'resort', 'accor', 'vacation', 'holiday', 'accommodation'],
     'Other': []  # Default category
