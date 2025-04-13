@@ -35,6 +35,13 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)agl', 'AGL'),
     (r'(?i)telstra', 'Telstra'),
     (r'(?i)optus', 'Optus'),
+    
+    # Fuel stations
+    (r'(?i)7-eleven|7 eleven|-eleven', '7-Eleven'),
+    (r'(?i)bp|british petroleum', 'BP'),
+    (r'(?i)shell', 'Shell'),
+    (r'(?i)caltex', 'Caltex'),
+    (r'(?i)united petroleum', 'United Petroleum'),
 ]
 
 # Transaction categories and their keywords
@@ -44,10 +51,11 @@ CATEGORIES: Dict[str, List[str]] = {
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus'],
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre'],
     'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer'],
-    'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'electricity', 'gas', 'water'],
+    'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'electricity', 'water', 'gas'],
     'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental'],
     'Education': ['university', 'school', 'college', 'tafe', 'course'],
     'Insurance': ['insurance', 'nrma', 'racq', 'racv', 'aami'],
+    'Fuel': ['7-eleven', '7 eleven', '-eleven', 'bp', 'shell', 'caltex', 'united petroleum', 'petrol', 'service station'],
     'Other': []  # Default category
 }
 

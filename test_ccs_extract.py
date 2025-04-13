@@ -267,6 +267,15 @@ def test_normalize_merchant():
     assert normalize_merchant("AGL ELECTRICITY") == "AGL"
     assert normalize_merchant("TELSTRA BILL") == "Telstra"
     
+    # Test fuel stations
+    assert normalize_merchant("-ELEVEN") == "7-Eleven"
+    assert normalize_merchant("7-ELEVEN") == "7-Eleven"
+    assert normalize_merchant("7 ELEVEN") == "7-Eleven"
+    assert normalize_merchant("BP SERVICE STATION") == "BP"
+    assert normalize_merchant("SHELL") == "Shell"
+    assert normalize_merchant("CALTEX") == "Caltex"
+    assert normalize_merchant("UNITED PETROLEUM") == "United Petroleum"
+    
     # Test Square payment transactions
     assert normalize_merchant("SQ *COFFEE SHOP") == "Cafe"
     assert normalize_merchant("SQ *RESTAURANT") == "Restaurant"
@@ -305,8 +314,19 @@ def test_categorize_transaction():
     
     # Test utilities
     assert categorize_transaction("ORIGIN ENERGY") == "Utilities"
-    assert categorize_transaction("AGL") == "Utilities"
+    assert categorize_transaction("AGL GAS") == "Utilities"
     assert categorize_transaction("TELSTRA") == "Utilities"
+    assert categorize_transaction("GAS BILL") == "Utilities"
+    
+    # Test fuel
+    assert categorize_transaction("-ELEVEN") == "Fuel"
+    assert categorize_transaction("7-ELEVEN") == "Fuel"
+    assert categorize_transaction("BP SERVICE STATION") == "Fuel"
+    assert categorize_transaction("SHELL") == "Fuel"
+    assert categorize_transaction("CALTEX") == "Fuel"
+    assert categorize_transaction("UNITED PETROLEUM") == "Fuel"
+    assert categorize_transaction("PETROL STATION") == "Fuel"
+    assert categorize_transaction("SERVICE STATION") == "Fuel"
     
     # Test health
     assert categorize_transaction("PHARMACY") == "Health"
