@@ -28,7 +28,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)cafe|coffee', 'Cafe'),
     (r'(?i)restaurant|dining', 'Restaurant'),
     (r'(?i)pub|tavern', 'Pub'),
-    (r'(?i)captains flat hotel', 'Captains Flat Hotel'),
+    (r'(?i)captains flat hote', 'Captains Flat Hotel'),
     
     # Pet Services
     (r'(?i)petpostaust', 'PetPost Australia'),
