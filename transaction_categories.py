@@ -69,7 +69,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)hardware store|hardware shop', 'Hardware Store'),
     
     # Electronics stores
-    (r'(?i)jb hi-fi|jb hifi|jbhifi', 'JB Hi-Fi'),
+    (r'(?i)jb hi-fi|jb hifi|jbhifi|jb hi fi', 'JB Hi-Fi'),
     (r'(?i)harvey norman|harveynorman', 'Harvey Norman'),
     (r'(?i)the good guys|good guys', 'The Good Guys'),
     (r'(?i)officeworks', 'Officeworks'),
@@ -81,7 +81,7 @@ CATEGORIES: Dict[str, List[str]] = {
     'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi', 'tfc sushi', 'zambrero', 'the spence grocer', 'mcdonalds', 'mcdonald\'s', 'maccas'],
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus'],
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek', 'hoyts'],
-    'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop', 'jb hi-fi', 'jb hifi', 'jbhifi', 'harvey norman', 'harveynorman', 'the good guys', 'good guys', 'officeworks'],
+    'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop', 'jb hi-fi', 'jb hifi', 'jbhifi', 'jb hi fi', 'harvey norman', 'harveynorman', 'the good guys', 'good guys', 'officeworks'],
     'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'belong', 'electricity', 'water', 'gas'],
     'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au'],
     'Education': ['university', 'school', 'college', 'tafe', 'course'],
