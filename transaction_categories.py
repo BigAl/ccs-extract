@@ -28,6 +28,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)cafe|coffee', 'Cafe'),
     (r'(?i)restaurant|dining', 'Restaurant'),
     (r'(?i)pub|tavern', 'Pub'),
+    (r'(?i)captains flat hotel', 'Captains Flat Hotel'),
     
     # Pet Services
     (r'(?i)petpostaust', 'PetPost Australia'),
@@ -109,7 +110,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
 # Transaction categories and their keywords
 CATEGORIES: Dict[str, List[str]] = {
     'Groceries': ['woolworths', 'coles', 'aldi', 'iga', 'supermarket', 'foodworks', 'nestle', 'nestlé', 'nestleau', 'nespresso australia'],
-    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi', 'tfc sushi', 'zambrero', 'the spence grocer', 'mcdonalds', 'mcdonald\'s', 'maccas', 'millsandgrills', 'mills and grills', 'dickson taphouse', 'canberra southern yarralumla', 'rocksalt', 'via dolce canberra'],
+    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi', 'tfc sushi', 'zambrero', 'the spence grocer', 'mcdonalds', 'mcdonald\'s', 'maccas', 'millsandgrills', 'mills and grills', 'dickson taphouse', 'canberra southern yarralumla', 'rocksalt', 'via dolce canberra', 'captains flat hotel'],
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus'],
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek', 'hoyts'],
     'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'harris scarfe', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop', 'jb hi-fi', 'jb hifi', 'jbhifi', 'jb hi fi', 'harvey norman', 'harveynorman', 'the good guys', 'good guys', 'officeworks'],
