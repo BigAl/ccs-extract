@@ -110,7 +110,11 @@ The script includes comprehensive error handling for:
 
 ## Limitations
 
-- The script assumes transactions follow specific patterns in the PDF
+- The script assumes transactions follow specific patterns in the PDF:
+  - Standard format with year: `15 Mar 2024 $123.45 GROCERY STORE`
+  - Standard format without year: `15 Mar $123.45 GROCERY STORE`
+  - Credit transactions are marked with "CR": `16 Mar $67.89 CR REFUND`
+  - Amounts can include commas: `17 Mar $1,234.56 RESTAURANT`
 - Date parsing requires either a full date or a statement period for accurate year assignment
 - Transaction amounts must be in a standard format with dollar signs
 - Credit transactions must be marked with "CR" in the statement
