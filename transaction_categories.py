@@ -80,6 +80,11 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)racq', 'RACQ'),
     (r'(?i)racv', 'RACV'),
     (r'(?i)aami', 'AAMI'),
+    
+    # Education
+    (r'(?i)miles franklin', 'Miles Franklin'),
+    (r'(?i)bounce holdings', 'Bounce Holdings'),
+    (r'(?i)school|college|university|tafe', 'Educational Institution'),
 ]
 
 # Transaction categories and their keywords
@@ -91,7 +96,7 @@ CATEGORIES: Dict[str, List[str]] = {
     'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop', 'jb hi-fi', 'jb hifi', 'jbhifi', 'jb hi fi', 'harvey norman', 'harveynorman', 'the good guys', 'good guys', 'officeworks'],
     'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'belong', 'electricity', 'water', 'gas'],
     'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au'],
-    'Education': ['university', 'school', 'college', 'tafe', 'course'],
+    'Education': ['university', 'school', 'college', 'tafe', 'course', 'miles franklin', 'bounce holdings', 'educational institution'],
     'Insurance': ['insurance', 'budget direct', 'nrma', 'racq', 'racv', 'aami'],
     'Fuel': ['7-eleven', '7 eleven', '-eleven', 'bp', 'shell', 'caltex', 'united petroleum', 'petrol', 'service station'],
     'Holiday': ['hotel', 'motel', 'resort', 'accor', 'vacation', 'holiday', 'accommodation'],
