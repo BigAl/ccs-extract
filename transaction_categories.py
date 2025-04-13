@@ -46,6 +46,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)uber', 'Uber'),
     (r'(?i)taxi|cab', 'Taxi'),
     (r'(?i)translink|go card', 'Public Transport'),
+    (r'(?i)transport dickson', 'Transport Dickson'),
     
     # Online services
     (r'(?i)netflix', 'Netflix'),
@@ -116,7 +117,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
 CATEGORIES: Dict[str, List[str]] = {
     'Groceries': ['woolworths', 'coles', 'aldi', 'iga', 'supermarket', 'foodworks', 'nestle', 'nestlé', 'nestleau', 'nespresso australia', 'supa express'],
     'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'bean origin', 'bliss and espresso macquarie', 'sushi sushi', 'tfc sushi', 'zambrero', 'the spence grocer', 'mcdonalds', 'mcdonald\'s', 'maccas', 'millsandgrills', 'mills and grills', 'dickson taphouse', 'canberra southern yarralumla', 'rocksalt', 'via dolce canberra', 'captains flat hotel', 'bravo vino pty ltd'],
-    'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus', 'parking', 'car park', 'parking fee', 'parking ticket', 'parking meter', 'parking permit'],
+    'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus', 'parking', 'car park', 'parking fee', 'parking ticket', 'parking meter', 'parking permit', 'transport dickson'],
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek', 'hoyts'],
     'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'harris scarfe', 'best and less', 'smiggle', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop', 'jb hi-fi', 'jb hifi', 'jbhifi', 'jb hi fi', 'harvey norman', 'harveynorman', 'the good guys', 'good guys', 'officeworks'],
     'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'belong', 'electricity', 'water', 'gas'],
