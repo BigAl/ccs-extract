@@ -242,6 +242,16 @@ class StatementExtractor:
             # Clean up transaction details
             trans['Transaction Details'] = ' '.join(trans['Transaction Details'].split())
             
+            # Normalize merchant name and categorize transaction
+            try:
+                from transaction_categories import normalize_merchant, categorize_transaction
+                trans['Merchant'] = normalize_merchant(trans['Transaction Details'])
+                trans['Category'] = categorize_transaction(trans['Transaction Details'])
+            except ImportError:
+                # Fallback if transaction_categories module is not available
+                trans['Merchant'] = trans['Transaction Details']
+                trans['Category'] = 'Other'
+            
             # Try to standardize the date format
             try:
                 # First try parsing with year
@@ -249,25 +259,15 @@ class StatementExtractor:
                     date_obj = datetime.strptime(trans['Transaction Date'], '%d %b %Y')
                 except ValueError:
                     # If that fails, add the default year and try parsing
-                    date_str_with_year = f"{trans['Transaction Date']} {default_year}"
-                    date_obj = datetime.strptime(date_str_with_year, '%d %b %Y')
-                    
-                    # If we have a statement period, check if we need to adjust the year
-                    if statement_period:
-                        # If the date is before the statement start and it's a valid date,
-                        # it might be from the next year
-                        if date_obj < statement_period['start']:
-                            date_obj = date_obj.replace(year=statement_period['end'].year)
+                    date_str = f"{trans['Transaction Date']} {default_year}"
+                    date_obj = datetime.strptime(date_str, '%d %b %Y')
                 
+                # Format date consistently
                 trans['Transaction Date'] = date_obj.strftime(DATE_FORMATS['output'])
-            except ValueError as e:
-                # Keep original format if parsing fails
-                self.logger.warning(f"Could not parse date: {trans['Transaction Date']} - {str(e)}")
+            except ValueError:
+                self.logger.warning(f"Could not parse date: {trans['Transaction Date']}")
             
             cleaned_transactions.append(trans)
-        
-        if self.debug_mode:
-            self.logger.debug(f"Cleaned transactions: {len(cleaned_transactions)}")
         
         return cleaned_transactions
     

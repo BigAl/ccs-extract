@@ -13,6 +13,8 @@ A Python utility for extracting transaction data from credit card statement PDFs
 - Provides transaction summary statistics
 - Compatible with Python 3.15+ (no deprecation warnings)
 - Customizable output file location
+- Normalizes merchant names
+- Categorizes transactions automatically
 
 ## Requirements
 
@@ -67,8 +69,32 @@ The script generates two types of output files:
 
 The CSV file includes the following columns:
 - Transaction Date (in DD/MM/YYYY format)
-- Transaction Details
+- Merchant (normalized merchant name)
+- Category (transaction category)
+- Transaction Details (original description)
 - Amount (negative for credits)
+
+### Transaction Categories
+
+The script automatically categorizes transactions into the following categories:
+- Groceries (supermarkets, food stores)
+- Dining (restaurants, cafes, pubs)
+- Transport (public transport, taxis, ride-sharing)
+- Entertainment (streaming services, movies, theatre)
+- Shopping (retail stores, online shopping)
+- Utilities (energy, internet, phone)
+- Health (pharmacies, medical services)
+- Education (schools, universities, courses)
+- Insurance (vehicle, home, health insurance)
+- Other (uncategorized transactions)
+
+### Merchant Normalization
+
+Common merchant names are normalized to consistent formats. For example:
+- "WOOLWORTHS" or "WOOLIES" → "Woolworths"
+- "COLES SUPERMARKET" → "Coles"
+- "NETFLIX.COM" → "Netflix"
+- "UBER *TRIP" → "Uber"
 
 ### Date Handling
 

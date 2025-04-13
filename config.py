@@ -36,7 +36,7 @@ TRANSACTION_PATTERNS: List[Dict[str, Pattern]] = [
 
 # CSV settings
 CSV_SETTINGS = {
-    'fieldnames': ['Transaction Date', 'Transaction Details', 'Amount'],
+    'fieldnames': ['Transaction Date', 'Merchant', 'Category', 'Transaction Details', 'Amount'],
     'delimiter': ',',
     'quotechar': '"',
     'quoting': 'QUOTE_MINIMAL'
