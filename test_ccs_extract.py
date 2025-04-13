@@ -247,6 +247,7 @@ def test_normalize_merchant():
     assert normalize_merchant("ALDI STORE") == "Aldi"
     
     # Test restaurants and cafes
+    assert normalize_merchant("SOUL ORIGIN") == "Soul Origin"
     assert normalize_merchant("CAFE EXPRESS") == "Cafe"
     assert normalize_merchant("RESTAURANT NAME") == "Restaurant"
     assert normalize_merchant("PUB AND GRILL") == "Pub"
@@ -282,6 +283,7 @@ def test_categorize_transaction():
     assert categorize_transaction("ALDI") == "Groceries"
     
     # Test dining
+    assert categorize_transaction("SOUL ORIGIN") == "Dining"
     assert categorize_transaction("RESTAURANT NAME") == "Dining"
     assert categorize_transaction("CAFE EXPRESS") == "Dining"
     assert categorize_transaction("PUB AND GRILL") == "Dining"

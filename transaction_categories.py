@@ -14,6 +14,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)iga', 'IGA'),
     
     # Restaurants and cafes
+    (r'(?i)soul origin', 'Soul Origin'),
     (r'(?i)cafe|coffee', 'Cafe'),
     (r'(?i)restaurant|dining', 'Restaurant'),
     (r'(?i)pub|tavern', 'Pub'),
@@ -39,11 +40,11 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
 # Transaction categories and their keywords
 CATEGORIES: Dict[str, List[str]] = {
     'Groceries': ['woolworths', 'coles', 'aldi', 'iga', 'supermarket', 'foodworks'],
-    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro'],
+    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin'],
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus'],
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre'],
     'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer'],
-    'Utilities': ['origin', 'agl', 'telstra', 'optus', 'electricity', 'gas', 'water'],
+    'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'electricity', 'gas', 'water'],
     'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental'],
     'Education': ['university', 'school', 'college', 'tafe', 'course'],
     'Insurance': ['insurance', 'nrma', 'racq', 'racv', 'aami'],
