@@ -17,6 +17,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     # Restaurants and cafes
     (r'(?i)soul origin', 'Soul Origin'),
     (r'(?i)space kitchen', 'Space Kitchen'),
+    (r'(?i)sushi sushi', 'Sushi Sushi'),
     (r'(?i)cafe|coffee', 'Cafe'),
     (r'(?i)restaurant|dining', 'Restaurant'),
     (r'(?i)pub|tavern', 'Pub'),
@@ -57,7 +58,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
 # Transaction categories and their keywords
 CATEGORIES: Dict[str, List[str]] = {
     'Groceries': ['woolworths', 'coles', 'aldi', 'iga', 'supermarket', 'foodworks', 'nestle', 'nestlé', 'nestleau'],
-    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen'],
+    'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi'],
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus'],
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek'],
     'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer'],
