@@ -62,7 +62,7 @@ Examples:
 ### Output
 
 The script generates two types of output files:
-1. `[input_filename]_transactions.csv` (default) or custom output file: Contains the extracted transaction data
+1. `[input_filename].csv` (default) or custom output file: Contains the extracted transaction data
 2. `[input_filename]_debug.txt`: Contains raw PDF text (only generated in debug mode)
 
 The CSV file includes the following columns:

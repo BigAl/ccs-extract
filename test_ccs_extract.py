@@ -182,7 +182,7 @@ def test_process_statement_default_output(extractor, tmp_path):
         extractor.process_statement(str(pdf_path))
         
         # Check default output file was created
-        default_output = tmp_path / "test_transactions.csv"
+        default_output = tmp_path / "test.csv"
         assert default_output.exists()
         content = default_output.read_text()
         assert 'Transaction Date' in content

@@ -305,55 +305,44 @@ class StatementExtractor:
     
     def process_statement(self, pdf_path: str, output_path: str = None) -> None:
         """
-        Process a credit card statement PDF.
+        Process a credit card statement PDF and extract transactions.
         
         Args:
             pdf_path (str): Path to the PDF file
-            output_path (str): Path to output CSV file (default: input_filename_transactions.csv)
+            output_path (str, optional): Path for the output CSV file. If not provided,
+                                       will use the input filename with .csv extension.
         """
         try:
             # Validate PDF
             self.validate_pdf(pdf_path)
             
-            # Define output paths
-            output_path = output_path or os.path.splitext(pdf_path)[0] + FILE_SETTINGS['output_suffix']
-            debug_output_path = os.path.splitext(pdf_path)[0] + FILE_SETTINGS['debug_suffix'] if self.debug_mode else None
-            
             # Extract text from PDF
-            text = self.extract_text_from_pdf(pdf_path)
+            self.statement_text = self.extract_text_from_pdf(pdf_path)
             
-            # Save debug output if needed
-            if debug_output_path:
-                with open(debug_output_path, 'w', encoding=FILE_SETTINGS['encoding']) as debug_file:
-                    debug_file.write(text)
-                self.logger.info(f"Debug text saved to {debug_output_path}")
+            # Extract transactions
+            transactions = self.extract_transactions(self.statement_text)
             
-            # Extract and process transactions
-            transactions = self.extract_transactions(text)
+            # Determine output path
+            if output_path is None:
+                # Use input filename but replace .pdf with .csv
+                output_path = os.path.splitext(pdf_path)[0] + '.csv'
             
             # Write to CSV
             self.write_to_csv(transactions, output_path)
             
             # Print summary
-            if transactions:
-                total_debits = sum(float(t['Amount']) for t in transactions if not t['Amount'].startswith('-'))
-                total_credits = sum(float(t['Amount']) for t in transactions if t['Amount'].startswith('-'))
+            print(f"\nProcessed {len(transactions)} transactions")
+            print(f"Output written to: {output_path}")
+            
+            if self.debug_mode:
+                debug_path = os.path.splitext(pdf_path)[0] + '_debug.txt'
+                with open(debug_path, 'w', encoding=FILE_SETTINGS['encoding']) as f:
+                    f.write(self.statement_text)
+                print(f"Debug output written to: {debug_path}")
                 
-                self.logger.info("\nSummary:")
-                self.logger.info(f"Total transactions: {len(transactions)}")
-                self.logger.info(f"Total debits: ${total_debits:.2f}")
-                self.logger.info(f"Total credits: ${abs(total_credits):.2f}")
-                self.logger.info(f"Net change: ${total_debits + total_credits:.2f}")
-                self.logger.info(f"\nOutput saved to: {output_path}")
-            else:
-                self.logger.warning("\nNo transactions were extracted. Try running with the --debug flag for more information.")
-        
-        except StatementExtractorError as e:
-            self.logger.error(str(e))
-            sys.exit(1)
         except Exception as e:
-            self.logger.error(f"Unexpected error: {str(e)}")
-            sys.exit(1)
+            self.logger.error(f"Error processing statement: {str(e)}")
+            raise
 
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""

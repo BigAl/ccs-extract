@@ -51,7 +51,6 @@ DEBUG_SETTINGS = {
 # File settings
 FILE_SETTINGS = {
     'encoding': 'utf-8',
-    'output_suffix': '_transactions.csv',
     'debug_suffix': '_debug.txt'
 }
 
