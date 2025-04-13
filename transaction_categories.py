@@ -60,6 +60,12 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     # Health
     (r'(?i)amcal|amcal pharmacy', 'Amcal Pharmacy'),
     (r'(?i)endota spa', 'Endota Spa'),
+    
+    # Hardware stores
+    (r'(?i)bunnings|bunnings warehouse', 'Bunnings Warehouse'),
+    (r'(?i)mitre 10|mitre10', 'Mitre 10'),
+    (r'(?i)home hardware', 'Home Hardware'),
+    (r'(?i)hardware store|hardware shop', 'Hardware Store'),
 ]
 
 # Transaction categories and their keywords
@@ -68,7 +74,7 @@ CATEGORIES: Dict[str, List[str]] = {
     'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'sushi sushi', 'zambrero', 'the spence grocer', 'mcdonalds', 'mcdonald\'s', 'maccas'],
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus'],
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek', 'hoyts'],
-    'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer'],
+    'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop'],
     'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'belong', 'electricity', 'water', 'gas'],
     'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au'],
     'Education': ['university', 'school', 'college', 'tafe', 'course'],
