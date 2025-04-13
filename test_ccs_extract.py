@@ -9,6 +9,7 @@ from unittest.mock import patch, MagicMock
 
 from ccs_extract import StatementExtractor
 from exceptions import PDFError, TransactionExtractionError, OutputError
+from transaction_categories import normalize_merchant, categorize_transaction
 
 # Get current year for date assertions
 CURRENT_YEAR = datetime.now().year
@@ -235,4 +236,120 @@ def test_process_statement_debug_output(extractor, tmp_path):
         content = debug_output.read_text()
         assert 'GROCERY STORE' in content
         assert 'RESTAURANT' in content
-        assert 'REFUND' in content 
+        assert 'REFUND' in content
+
+def test_normalize_merchant():
+    """Test merchant name normalization."""
+    # Test grocery stores
+    assert normalize_merchant("WOOLWORTHS SUPERMARKET") == "Woolworths"
+    assert normalize_merchant("WOOLIES") == "Woolworths"
+    assert normalize_merchant("COLES SUPERMARKET") == "Coles"
+    assert normalize_merchant("ALDI STORE") == "Aldi"
+    
+    # Test restaurants and cafes
+    assert normalize_merchant("CAFE EXPRESS") == "Cafe"
+    assert normalize_merchant("RESTAURANT NAME") == "Restaurant"
+    assert normalize_merchant("PUB AND GRILL") == "Pub"
+    
+    # Test transport
+    assert normalize_merchant("UBER *TRIP") == "Uber"
+    assert normalize_merchant("TAXI SERVICE") == "Taxi"
+    assert normalize_merchant("TRANSLINK GO CARD") == "Public Transport"
+    
+    # Test online services
+    assert normalize_merchant("NETFLIX.COM") == "Netflix"
+    assert normalize_merchant("SPOTIFY PREMIUM") == "Spotify"
+    assert normalize_merchant("AMAZON.COM") == "Amazon"
+    
+    # Test utilities
+    assert normalize_merchant("ORIGIN ENERGY") == "Origin Energy"
+    assert normalize_merchant("AGL ELECTRICITY") == "AGL"
+    assert normalize_merchant("TELSTRA BILL") == "Telstra"
+    
+    # Test unknown merchant
+    assert normalize_merchant("UNKNOWN STORE") == "UNKNOWN STORE"
+
+def test_categorize_transaction():
+    """Test transaction categorization."""
+    # Test groceries
+    assert categorize_transaction("WOOLWORTHS SUPERMARKET") == "Groceries"
+    assert categorize_transaction("COLES") == "Groceries"
+    assert categorize_transaction("ALDI") == "Groceries"
+    
+    # Test dining
+    assert categorize_transaction("RESTAURANT NAME") == "Dining"
+    assert categorize_transaction("CAFE EXPRESS") == "Dining"
+    assert categorize_transaction("PUB AND GRILL") == "Dining"
+    
+    # Test transport
+    assert categorize_transaction("UBER TRIP") == "Transport"
+    assert categorize_transaction("TAXI SERVICE") == "Transport"
+    assert categorize_transaction("TRANSLINK") == "Transport"
+    
+    # Test entertainment
+    assert categorize_transaction("NETFLIX") == "Entertainment"
+    assert categorize_transaction("SPOTIFY") == "Entertainment"
+    assert categorize_transaction("CINEMA") == "Entertainment"
+    
+    # Test shopping
+    assert categorize_transaction("AMAZON") == "Shopping"
+    assert categorize_transaction("TARGET") == "Shopping"
+    assert categorize_transaction("KMART") == "Shopping"
+    
+    # Test utilities
+    assert categorize_transaction("ORIGIN ENERGY") == "Utilities"
+    assert categorize_transaction("AGL") == "Utilities"
+    assert categorize_transaction("TELSTRA") == "Utilities"
+    
+    # Test health
+    assert categorize_transaction("PHARMACY") == "Health"
+    assert categorize_transaction("CHEMIST") == "Health"
+    assert categorize_transaction("MEDICAL CENTRE") == "Health"
+    
+    # Test education
+    assert categorize_transaction("UNIVERSITY") == "Education"
+    assert categorize_transaction("SCHOOL") == "Education"
+    assert categorize_transaction("COLLEGE") == "Education"
+    
+    # Test insurance
+    assert categorize_transaction("INSURANCE") == "Insurance"
+    assert categorize_transaction("NRMA") == "Insurance"
+    assert categorize_transaction("RACQ") == "Insurance"
+    
+    # Test unknown category
+    assert categorize_transaction("UNKNOWN STORE") == "Other"
+
+def test_clean_transactions_with_categorization(extractor, tmp_path):
+    """Test transaction cleaning with categorization."""
+    # Create a temporary PDF file
+    pdf_path = tmp_path / "test.pdf"
+    with open(pdf_path, 'wb') as f:
+        f.write(b'%PDF-1.4\n')  # Write minimal PDF header
+    
+    # Mock the PDF reader
+    with patch('ccs_extract.PdfReader') as mock_pdf_reader:
+        mock_page = MagicMock()
+        mock_page.extract_text.return_value = SAMPLE_TRANSACTION_TEXT
+        mock_pdf_reader.return_value.pages = [mock_page]
+        
+        # Process statement
+        extractor.process_statement(str(pdf_path))
+        
+        # Check output file was created
+        output_path = tmp_path / "test.csv"
+        assert output_path.exists()
+        
+        # Read the CSV content
+        with open(output_path, 'r') as f:
+            content = f.read()
+            lines = content.splitlines()
+            
+            # Check header includes new fields
+            assert 'Transaction Date' in lines[0]
+            assert 'Merchant' in lines[0]
+            assert 'Category' in lines[0]
+            assert 'Transaction Details' in lines[0]
+            assert 'Amount' in lines[0]
+            
+            # Check we have the expected number of transactions
+            assert len(lines) == 4  # Header + 3 transactions 
