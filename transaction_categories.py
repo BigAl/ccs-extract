@@ -75,6 +75,7 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)amcal|amcal pharmacy', 'Amcal Pharmacy'),
     (r'(?i)endota spa', 'Endota Spa'),
     (r'(?i)belconnen chiro', 'Belconnen Chiropractor'),
+    (r'(?i)specsavers', 'Specsavers'),
     
     # Hardware stores
     (r'(?i)bunnings|bunnings warehouse', 'Bunnings Warehouse'),
@@ -115,7 +116,7 @@ CATEGORIES: Dict[str, List[str]] = {
     'Entertainment': ['netflix', 'spotify', 'cinema', 'movie', 'theatre', 'ticketek', 'hoyts'],
     'Shopping': ['amazon', 'ebay', 'target', 'kmart', 'big w', 'david jones', 'myer', 'harris scarfe', 'bunnings', 'mitre 10', 'home hardware', 'hardware store', 'hardware shop', 'jb hi-fi', 'jb hifi', 'jbhifi', 'jb hi fi', 'harvey norman', 'harveynorman', 'the good guys', 'good guys', 'officeworks'],
     'Utilities': ['origin energy', 'agl', 'telstra', 'optus', 'belong', 'electricity', 'water', 'gas'],
-    'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au', 'belconnen chiro', 'belconnen chiropractor'],
+    'Health': ['pharmacy', 'chemist', 'medical', 'doctor', 'dental', 'amcal', 'endota spa', 'www.endota.com.au', 'belconnen chiro', 'belconnen chiropractor', 'specsavers'],
     'Education': ['university', 'school', 'college', 'tafe', 'course', 'miles franklin', 'bounce holdings', 'educational institution'],
     'Insurance': ['insurance', 'budget direct', 'nrma', 'racq', 'racv', 'aami'],
     'Fuel': ['7-eleven', '7 eleven', '-eleven', 'bp', 'shell', 'caltex', 'united petroleum', 'petrol', 'service station'],
