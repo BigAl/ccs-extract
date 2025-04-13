@@ -82,6 +82,9 @@ def normalize_merchant(description: str) -> str:
     # Remove Square payment prefix if present
     description = re.sub(r'^SQ \*', '', description)
     
+    # Remove PayPal payment prefix if present
+    description = re.sub(r'^PAYPAL \*', '', description)
+    
     for pattern, normalized in MERCHANT_PATTERNS:
         if re.search(pattern, description):
             return normalized

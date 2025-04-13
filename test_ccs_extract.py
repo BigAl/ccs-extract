@@ -288,9 +288,12 @@ def test_normalize_merchant():
     assert normalize_merchant("AMCAL PHARMACY") == "Amcal Pharmacy"
     assert normalize_merchant("AMCAL") == "Amcal Pharmacy"
     
-    # Test Square payment transactions
+    # Test payment providers
     assert normalize_merchant("SQ *COFFEE SHOP") == "Cafe"
     assert normalize_merchant("SQ *RESTAURANT") == "Restaurant"
+    assert normalize_merchant("PAYPAL *NETFLIX") == "Netflix"
+    assert normalize_merchant("PAYPAL *AMAZON") == "Amazon"
+    assert normalize_merchant("PAYPAL *UNKNOWN STORE") == "UNKNOWN STORE"
     assert normalize_merchant("SQ *UNKNOWN STORE") == "UNKNOWN STORE"
     
     # Test unknown merchant
