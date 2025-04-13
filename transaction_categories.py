@@ -3,10 +3,39 @@ Transaction categorization and normalization rules for CCS-Extract.
 """
 
 import re
+import json
+import os
 from typing import Dict, List, Tuple
+from jsonschema import validate, ValidationError
 
-# Common merchant name patterns and their normalized names
-MERCHANT_PATTERNS: List[Tuple[str, str]] = [
+# JSON schema for configuration validation
+CONFIG_SCHEMA = {
+    "type": "object",
+    "required": ["merchant_patterns", "categories"],
+    "properties": {
+        "merchant_patterns": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["pattern", "normalized"],
+                "properties": {
+                    "pattern": {"type": "string"},
+                    "normalized": {"type": "string"}
+                }
+            }
+        },
+        "categories": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {"type": "string"}
+            }
+        }
+    }
+}
+
+# Default merchant patterns and categories
+DEFAULT_MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     # Grocery stores
     (r'(?i)woolworths|woolies', 'Woolworths'),
     (r'(?i)coles', 'Coles'),
@@ -115,8 +144,8 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)via dolce canberra', 'Via Dolce Canberra'),
 ]
 
-# Transaction categories and their keywords
-CATEGORIES: Dict[str, List[str]] = {
+# Default transaction categories and their keywords
+DEFAULT_CATEGORIES: Dict[str, List[str]] = {
     'Groceries': ['woolworths', 'coles', 'aldi', 'iga', 'supermarket', 'foodworks', 'nestle', 'nestlé', 'nestleau', 'nespresso australia', 'supa express'],
     'Dining': ['restaurant', 'cafe', 'coffee', 'pub', 'tavern', 'bistro', 'soul origin', 'space kitchen', 'bean origin', 'bliss and espresso macquarie', 'sushi sushi', 'tfc sushi', 'zambrero', 'the spence grocer', 'mcdonalds', 'mcdonald\'s', 'maccas', 'millsandgrills', 'mills and grills', 'dickson taphouse', 'canberra southern yarralumla', 'rocksalt', 'via dolce canberra', 'captains flat hotel', 'bravo vino pty ltd'],
     'Transport': ['uber', 'taxi', 'cab', 'translink', 'go card', 'train', 'bus', 'parking', 'car park', 'parking fee', 'parking ticket', 'parking meter', 'parking permit', 'transport dickson'],
@@ -131,6 +160,55 @@ CATEGORIES: Dict[str, List[str]] = {
     'Pet Expenses': ['petpostaust', 'k9 and co adventure', 'petstock pty ltd', 'petbarn', 'vet', 'veterinary', 'pet warehouse', 'pet circle', 'pet shop', 'pet', 'animal', 'pet care', 'pet supplies', 'animal hospital', 'grooming', 'pet food', 'pet accessories', 'pet medication'],
     'Other': []  # Default category
 }
+
+def load_custom_config():
+    """Load custom merchant patterns and categories from config file if available."""
+    config_path = os.path.join(os.path.dirname(__file__), 'transaction_config.json')
+    
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, 'r') as f:
+                config = json.load(f)
+                
+            # Validate configuration against schema
+            try:
+                validate(instance=config, schema=CONFIG_SCHEMA)
+            except ValidationError as e:
+                print(f"Warning: Invalid configuration format: {e}")
+                return DEFAULT_MERCHANT_PATTERNS, DEFAULT_CATEGORIES
+                
+            # Convert JSON format to the expected tuple/list format
+            merchant_patterns = [(item['pattern'], item['normalized']) for item in config.get('merchant_patterns', [])]
+            categories = config.get('categories', {})
+            
+            return merchant_patterns, categories
+        except Exception as e:
+            print(f"Warning: Could not load custom configuration: {e}")
+            return DEFAULT_MERCHANT_PATTERNS, DEFAULT_CATEGORIES
+    else:
+        # Create a default config file if it doesn't exist
+        create_default_config(config_path)
+        return DEFAULT_MERCHANT_PATTERNS, DEFAULT_CATEGORIES
+
+def create_default_config(config_path):
+    """Create a default configuration file."""
+    config = {
+        'merchant_patterns': [
+            {'pattern': pattern, 'normalized': normalized} 
+            for pattern, normalized in DEFAULT_MERCHANT_PATTERNS
+        ],
+        'categories': DEFAULT_CATEGORIES
+    }
+    
+    try:
+        with open(config_path, 'w') as f:
+            json.dump(config, f, indent=2)
+        print(f"Created default configuration file at {config_path}")
+    except Exception as e:
+        print(f"Warning: Could not create default configuration file: {e}")
+
+# Load configurations
+MERCHANT_PATTERNS, CATEGORIES = load_custom_config()
 
 def normalize_merchant(description: str) -> str:
     """
@@ -163,10 +241,49 @@ def categorize_transaction(description: str) -> str:
     Returns:
         str: Transaction category
     """
+    # Remove Square payment prefix if present
+    description = re.sub(r'^SQ \*', '', description)
+    
+    # Remove PayPal payment prefix if present
+    description = re.sub(r'^PAYPAL \*', '', description)
+    
     description_lower = description.lower()
     
     for category, keywords in CATEGORIES.items():
         if any(keyword in description_lower for keyword in keywords):
             return category
     
-    return 'Other' 
+    return 'Other'
+
+def validate_config_file(config_path: str = None) -> bool:
+    """
+    Validate the configuration file against the schema.
+    
+    Args:
+        config_path (str, optional): Path to the configuration file.
+            If None, uses the default path in the script's directory.
+            
+    Returns:
+        bool: True if the configuration is valid, False otherwise.
+    """
+    if config_path is None:
+        config_path = os.path.join(os.path.dirname(__file__), 'transaction_config.json')
+    
+    if not os.path.exists(config_path):
+        print(f"Error: Configuration file not found at {config_path}")
+        return False
+        
+    try:
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+            
+        try:
+            validate(instance=config, schema=CONFIG_SCHEMA)
+            print("Configuration file is valid.")
+            return True
+        except ValidationError as e:
+            print(f"Error: Invalid configuration format: {e}")
+            return False
+    except Exception as e:
+        print(f"Error: Could not read configuration file: {e}")
+        return False 

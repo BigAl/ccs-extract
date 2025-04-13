@@ -347,26 +347,54 @@ class StatementExtractor:
 
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(description="Extract transactions from credit card statement PDFs")
-    parser.add_argument("pdf_path", nargs="?", help="Path to the PDF file")
-    parser.add_argument("--debug", action="store_true", help="Enable debug mode")
-    parser.add_argument("--output", "-o", help="Path to output CSV file (default: input_filename_transactions.csv)")
+    parser = argparse.ArgumentParser(
+        description='Extract transactions from credit card statement PDFs.'
+    )
+    parser.add_argument(
+        'pdf_file',
+        nargs='?',
+        help='Path to the PDF file to process'
+    )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Enable debug mode'
+    )
+    parser.add_argument(
+        '--output',
+        help='Custom output file path'
+    )
+    parser.add_argument(
+        '--validate-config',
+        action='store_true',
+        help='Validate the transaction configuration file'
+    )
     return parser.parse_args()
 
 def main() -> None:
     """Main entry point."""
     args = parse_args()
     
-    # Create extractor
-    extractor = StatementExtractor(debug_mode=args.debug)
+    # Handle configuration validation
+    if args.validate_config:
+        from transaction_categories import validate_config_file
+        if validate_config_file():
+            sys.exit(0)
+        else:
+            sys.exit(1)
     
-    # Get PDF path
-    pdf_path = args.pdf_path
-    if not pdf_path:
-        pdf_path = input("Enter the path to your PDF file: ").strip()
+    # Handle interactive mode
+    if not args.pdf_file:
+        pdf_file = input("Enter the path to your PDF file: ")
+    else:
+        pdf_file = args.pdf_file
     
-    # Process the statement
-    extractor.process_statement(pdf_path, output_path=args.output)
+    try:
+        extractor = StatementExtractor(debug_mode=args.debug)
+        extractor.process_statement(pdf_file, args.output)
+    except StatementExtractorError as e:
+        logger.error(str(e))
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()

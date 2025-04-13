@@ -21,6 +21,7 @@ A Python utility for extracting transaction data from credit card statement PDFs
 - Python 3.x
 - pypdf
 - tqdm
+- jsonschema
 
 ## Installation
 
@@ -32,7 +33,7 @@ cd ccs-extract
 
 2. Install the required dependencies:
 ```bash
-pip install pypdf tqdm
+pip install pypdf tqdm jsonschema
 ```
 
 ## Usage
@@ -40,7 +41,7 @@ pip install pypdf tqdm
 ### Command Line Usage
 
 ```bash
-python ccs_extract.py [pdf_file_path] [--debug] [--output OUTPUT_FILE]
+python ccs_extract.py [pdf_file_path] [--debug] [--output OUTPUT_FILE] [--validate-config]
 ```
 
 Examples:
@@ -55,6 +56,10 @@ Examples:
 - Specify custom output file:
   ```bash
   python ccs_extract.py statement.pdf --output my_transactions.csv
+  ```
+- Validate configuration file:
+  ```bash
+  python ccs_extract.py --validate-config
   ```
 - Run in interactive mode:
   ```bash
@@ -95,6 +100,43 @@ Common merchant names are normalized to consistent formats. For example:
 - "COLES SUPERMARKET" → "Coles"
 - "NETFLIX.COM" → "Netflix"
 - "UBER *TRIP" → "Uber"
+
+### Configuration File
+
+The script uses a JSON configuration file (`transaction_config.json`) to manage merchant patterns and transaction categories. This file is automatically created with default values if it doesn't exist.
+
+#### File Structure
+
+```json
+{
+  "merchant_patterns": [
+    {
+      "pattern": "(?i)woolworths|woolies",
+      "normalized": "Woolworths"
+    },
+    // ... more patterns ...
+  ],
+  "categories": {
+    "Groceries": ["woolworths", "coles", "aldi", ...],
+    "Dining": ["restaurant", "cafe", "coffee", ...],
+    // ... more categories ...
+  }
+}
+```
+
+#### Customization
+
+You can customize the configuration by editing `transaction_config.json`:
+
+1. **Merchant Patterns**: Add or modify patterns to normalize merchant names
+   - `pattern`: Regular expression to match merchant names (case-insensitive)
+   - `normalized`: The standardized name to use
+
+2. **Categories**: Add or modify transaction categories
+   - Key: Category name
+   - Value: Array of keywords to match transactions
+
+The configuration file is validated against a schema to ensure proper formatting. If the file is invalid, the script will fall back to default values.
 
 ### Date Handling
 
