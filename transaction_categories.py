@@ -29,6 +29,16 @@ MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)restaurant|dining', 'Restaurant'),
     (r'(?i)pub|tavern', 'Pub'),
     
+    # Pet Services
+    (r'(?i)petpostaust', 'PetPost Australia'),
+    (r'(?i)k9 and co adventure', 'K9 and Co Adventure'),
+    (r'(?i)petstock pty ltd', 'Petstock Pty Ltd'),
+    (r'(?i)petbarn', 'Petbarn'),
+    (r'(?i)vet|veterinary', 'Veterinarian'),
+    (r'(?i)pet warehouse', 'Pet Warehouse'),
+    (r'(?i)pet circle', 'Pet Circle'),
+    (r'(?i)pet shop', 'Pet Shop'),
+    
     # Transport
     (r'(?i)uber', 'Uber'),
     (r'(?i)taxi|cab', 'Taxi'),
@@ -109,6 +119,7 @@ CATEGORIES: Dict[str, List[str]] = {
     'Insurance': ['insurance', 'budget direct', 'nrma', 'racq', 'racv', 'aami'],
     'Fuel': ['7-eleven', '7 eleven', '-eleven', 'bp', 'shell', 'caltex', 'united petroleum', 'petrol', 'service station'],
     'Holiday': ['hotel', 'motel', 'resort', 'accor', 'vacation', 'holiday', 'accommodation'],
+    'Pet Expenses': ['petpostaust', 'k9 and co adventure', 'petstock pty ltd', 'petbarn', 'vet', 'veterinary', 'pet warehouse', 'pet circle', 'pet shop', 'pet', 'animal', 'pet care', 'pet supplies', 'animal hospital', 'grooming', 'pet food', 'pet accessories', 'pet medication'],
     'Other': []  # Default category
 }
 
