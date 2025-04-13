@@ -266,6 +266,11 @@ def test_normalize_merchant():
     assert normalize_merchant("AGL ELECTRICITY") == "AGL"
     assert normalize_merchant("TELSTRA BILL") == "Telstra"
     
+    # Test Square payment transactions
+    assert normalize_merchant("SQ *COFFEE SHOP") == "Cafe"
+    assert normalize_merchant("SQ *RESTAURANT") == "Restaurant"
+    assert normalize_merchant("SQ *UNKNOWN STORE") == "UNKNOWN STORE"
+    
     # Test unknown merchant
     assert normalize_merchant("UNKNOWN STORE") == "UNKNOWN STORE"
 

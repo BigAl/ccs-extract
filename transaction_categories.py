@@ -60,6 +60,9 @@ def normalize_merchant(description: str) -> str:
     Returns:
         str: Normalized merchant name
     """
+    # Remove Square payment prefix if present
+    description = re.sub(r'^SQ \*', '', description)
+    
     for pattern, normalized in MERCHANT_PATTERNS:
         if re.search(pattern, description):
             return normalized
