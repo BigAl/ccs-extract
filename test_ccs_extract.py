@@ -248,6 +248,7 @@ def test_normalize_merchant():
     
     # Test restaurants and cafes
     assert normalize_merchant("SOUL ORIGIN") == "Soul Origin"
+    assert normalize_merchant("SPACE KITCHEN") == "Space Kitchen"
     assert normalize_merchant("CAFE EXPRESS") == "Cafe"
     assert normalize_merchant("RESTAURANT NAME") == "Restaurant"
     assert normalize_merchant("PUB AND GRILL") == "Pub"
@@ -261,11 +262,14 @@ def test_normalize_merchant():
     assert normalize_merchant("NETFLIX.COM") == "Netflix"
     assert normalize_merchant("SPOTIFY PREMIUM") == "Spotify"
     assert normalize_merchant("AMAZON.COM") == "Amazon"
+    assert normalize_merchant("TICKETEK.COM.AU") == "Ticketek"
     
     # Test utilities
     assert normalize_merchant("ORIGIN ENERGY") == "Origin Energy"
     assert normalize_merchant("AGL ELECTRICITY") == "AGL"
     assert normalize_merchant("TELSTRA BILL") == "Telstra"
+    assert normalize_merchant("BELONG MOBILE") == "Belong"
+    assert normalize_merchant("BELONG NBN") == "Belong"
     
     # Test fuel stations
     assert normalize_merchant("-ELEVEN") == "7-Eleven"
@@ -275,6 +279,14 @@ def test_normalize_merchant():
     assert normalize_merchant("SHELL") == "Shell"
     assert normalize_merchant("CALTEX") == "Caltex"
     assert normalize_merchant("UNITED PETROLEUM") == "United Petroleum"
+    
+    # Test hotels
+    assert normalize_merchant("ACCOR HOTELS") == "Accor"
+    assert normalize_merchant("MERCURE ACCOR") == "Accor"
+    
+    # Test health
+    assert normalize_merchant("AMCAL PHARMACY") == "Amcal Pharmacy"
+    assert normalize_merchant("AMCAL") == "Amcal Pharmacy"
     
     # Test Square payment transactions
     assert normalize_merchant("SQ *COFFEE SHOP") == "Cafe"
@@ -293,6 +305,7 @@ def test_categorize_transaction():
     
     # Test dining
     assert categorize_transaction("SOUL ORIGIN") == "Dining"
+    assert categorize_transaction("SPACE KITCHEN") == "Dining"
     assert categorize_transaction("RESTAURANT NAME") == "Dining"
     assert categorize_transaction("CAFE EXPRESS") == "Dining"
     assert categorize_transaction("PUB AND GRILL") == "Dining"
@@ -306,6 +319,8 @@ def test_categorize_transaction():
     assert categorize_transaction("NETFLIX") == "Entertainment"
     assert categorize_transaction("SPOTIFY") == "Entertainment"
     assert categorize_transaction("CINEMA") == "Entertainment"
+    assert categorize_transaction("TICKETEK") == "Entertainment"
+    assert categorize_transaction("TICKETEK.COM.AU") == "Entertainment"
     
     # Test shopping
     assert categorize_transaction("AMAZON") == "Shopping"
@@ -317,6 +332,8 @@ def test_categorize_transaction():
     assert categorize_transaction("AGL GAS") == "Utilities"
     assert categorize_transaction("TELSTRA") == "Utilities"
     assert categorize_transaction("GAS BILL") == "Utilities"
+    assert categorize_transaction("BELONG MOBILE") == "Utilities"
+    assert categorize_transaction("BELONG NBN") == "Utilities"
     
     # Test fuel
     assert categorize_transaction("-ELEVEN") == "Fuel"
@@ -332,6 +349,18 @@ def test_categorize_transaction():
     assert categorize_transaction("PHARMACY") == "Health"
     assert categorize_transaction("CHEMIST") == "Health"
     assert categorize_transaction("MEDICAL CENTRE") == "Health"
+    assert categorize_transaction("AMCAL PHARMACY") == "Health"
+    assert categorize_transaction("AMCAL") == "Health"
+    
+    # Test holiday
+    assert categorize_transaction("ACCOR HOTELS") == "Holiday"
+    assert categorize_transaction("MERCURE ACCOR") == "Holiday"
+    assert categorize_transaction("HOTEL") == "Holiday"
+    assert categorize_transaction("MOTEL") == "Holiday"
+    assert categorize_transaction("RESORT") == "Holiday"
+    assert categorize_transaction("VACATION") == "Holiday"
+    assert categorize_transaction("HOLIDAY") == "Holiday"
+    assert categorize_transaction("ACCOMMODATION") == "Holiday"
     
     # Test education
     assert categorize_transaction("UNIVERSITY") == "Education"
