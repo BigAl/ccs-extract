@@ -16,8 +16,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
-# Create necessary directories with secure permissions
+# Create necessary directories and set up configuration
 RUN mkdir -p input output && \
+    cp transaction_config.template.json transaction_config.json && \
     chmod 755 input output && \
     chmod 644 transaction_config.json && \
     chmod g+w /app/output
