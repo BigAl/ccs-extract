@@ -9,5 +9,12 @@ setup(
         "tqdm>=4.66.0",
         "jsonschema>=4.21.0",
     ],
+    extras_require={
+        'dev': [
+            'pytest>=8.0.0',
+            'pytest-cov>=6.0.0',
+            'coverage>=7.0.0',
+        ],
+    },
     python_requires=">=3.13",
 ) 

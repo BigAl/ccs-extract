@@ -5,15 +5,15 @@ FROM python:3.13-slim
 WORKDIR /app
 
 # Copy requirements first to leverage Docker cache
-COPY requirements.txt .
+COPY setup.py .
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir -e .
 
 # Copy the rest of the application
 COPY . .
 
-# Create a volume for PDF files and output
+# Create volumes for input and output directories
 VOLUME ["/app/input", "/app/output"]
 
 # Set environment variables
