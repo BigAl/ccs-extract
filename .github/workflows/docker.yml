@@ -5,7 +5,6 @@ on:
     branches: [ main ]
     paths:
       - 'Dockerfile'
-      - 'compose.yaml'
       - 'requirements.txt'
       - 'ccs_extract.py'
       - '.github/workflows/docker.yml'
@@ -13,7 +12,6 @@ on:
     branches: [ main ]
     paths:
       - 'Dockerfile'
-      - 'compose.yaml'
       - 'requirements.txt'
       - 'ccs_extract.py'
       - '.github/workflows/docker.yml'
@@ -71,7 +69,6 @@ jobs:
           mkdir -p input output
           # Set directory permissions to 777 to allow Docker container to write
           chmod 777 input output
-          cp transaction_config.example.json transaction_config.json
           # Install reportlab for PDF generation
           pip install reportlab
           # Create a simple PDF for testing using Python
@@ -85,7 +82,7 @@ jobs:
           # Set PDF file permissions
           chmod 666 input/sample.pdf
 
-      - name: Run Docker Compose tests
+      - name: Run Docker tests
         run: |
           # Test basic container functionality
           docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output:/app/output:rw ccs-extract:latest /app/input/sample.pdf --output /app/output/sample.csv
