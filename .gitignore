@@ -22,8 +22,9 @@ wheels/
 
 # Virtual Environment
 venv/
-env/
 ENV/
+env/
+.env/
 
 # IDE
 .idea/
@@ -35,6 +36,21 @@ ENV/
 *.log
 *.csv
 *_debug.txt
+transaction_config.json
+input/
+output/
+.coverage
+.pytest_cache/
+.mypy_cache/
+.black_cache/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# System
+.DS_Store
+Thumbs.db
 
 # Personal configuration
 transaction_config.json

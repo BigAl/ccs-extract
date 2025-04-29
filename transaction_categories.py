@@ -39,9 +39,9 @@ DEFAULT_MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     # Grocery stores
     (r'(?i)woolworths(?:\s+supermarket)?|woolies', 'Woolworths'),
     (r'(?i)coles(?:\s+supermarket)?', 'Coles'),
-    (r'(?i)aldi', 'Aldi'),
+    (r'(?i)aldi(?:\s+store)?', 'Aldi'),
     (r'(?i)iga', 'IGA'),
-    (r'(?i)nestle|nestlé|nestleau', 'Nestlé Australia'),
+    (r'(?i)nestle|nestlé|nestleau|nestleaust', 'Nestlé Australia'),
     (r'(?i)nespresso australia', 'Nespresso Australia'),
     
     # Restaurants and cafes

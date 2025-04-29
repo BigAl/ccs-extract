@@ -13,11 +13,6 @@ setup(
         "dev": [
             "pytest>=8.0.0",
             "pytest-cov>=4.1.0",
-            "flake8>=7.0.0",
-            "black>=24.1.1",
-            "isort>=5.13.2",
-            "mypy>=1.8.0",
-            "pre-commit>=3.6.0",
             "reportlab>=4.0.0",
         ],
     },
