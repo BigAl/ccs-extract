@@ -31,10 +31,30 @@ git clone https://github.com/yourusername/ccs-extract.git
 cd ccs-extract
 ```
 
-2. Install the required dependencies:
+2. Set up the virtual environment and install dependencies:
 ```bash
-pip install pypdf tqdm jsonschema
+# Source the setup script (note the 'source' command)
+source setup.sh
 ```
+
+The setup script will:
+- Create a Python virtual environment
+- Activate the environment
+- Install all required dependencies
+- Create a configuration file from the template
+
+The virtual environment will remain active in your current shell session. You can run the tool immediately after setup.
+
+### Deactivating the Virtual Environment
+
+When you're done using the tool, you can deactivate the virtual environment:
+```bash
+deactivate
+```
+
+### Using the Tool
+
+With the virtual environment activated, you can run the tool as described in the Usage section below.
 
 ## Usage
 
