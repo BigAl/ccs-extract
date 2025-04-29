@@ -1,0 +1,95 @@
+name: Docker Build and Test
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - 'requirements.txt'
+      - 'ccs_extract.py'
+      - '.github/workflows/docker.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - 'requirements.txt'
+      - 'ccs_extract.py'
+      - '.github/workflows/docker.yml'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          load: true
+          tags: ccs-extract:latest
+
+      - name: Create test environment
+        run: |
+          mkdir -p input output
+          cp transaction_config.example.json transaction_config.json
+          # Create a simple PDF for testing
+          echo "%PDF-1.4" > input/sample.pdf
+          echo "1 0 obj" >> input/sample.pdf
+          echo "<</Type /Catalog /Pages 2 0 R>>" >> input/sample.pdf
+          echo "endobj" >> input/sample.pdf
+          echo "2 0 obj" >> input/sample.pdf
+          echo "<</Type /Pages /Kids [3 0 R] /Count 1>>" >> input/sample.pdf
+          echo "endobj" >> input/sample.pdf
+          echo "3 0 obj" >> input/sample.pdf
+          echo "<</Type /Page /Parent 2 0 R /Resources <<>> /Contents 4 0 R>>" >> input/sample.pdf
+          echo "endobj" >> input/sample.pdf
+          echo "4 0 obj" >> input/sample.pdf
+          echo "<</Length 44>>" >> input/sample.pdf
+          echo "stream" >> input/sample.pdf
+          echo "BT /F1 12 Tf 100 700 Td (Sample Credit Card Statement) Tj ET" >> input/sample.pdf
+          echo "endstream" >> input/sample.pdf
+          echo "endobj" >> input/sample.pdf
+          echo "xref" >> input/sample.pdf
+          echo "0 5" >> input/sample.pdf
+          echo "0000000000 65535 f" >> input/sample.pdf
+          echo "0000000010 00000 n" >> input/sample.pdf
+          echo "0000000056 00000 n" >> input/sample.pdf
+          echo "0000000102 00000 n" >> input/sample.pdf
+          echo "0000000162 00000 n" >> input/sample.pdf
+          echo "trailer" >> input/sample.pdf
+          echo "<</Size 5 /Root 1 0 R>>" >> input/sample.pdf
+          echo "startxref" >> input/sample.pdf
+          echo "242" >> input/sample.pdf
+          echo "%%EOF" >> input/sample.pdf
+
+      - name: Run Docker Compose tests
+        run: |
+          # Test basic container startup
+          docker-compose run --rm ccs-extract --help
+          
+          # Test configuration validation
+          docker-compose run --rm ccs-extract --validate-config
+          
+          # Test with sample PDF
+          docker-compose run --rm ccs-extract input/sample.pdf
+
+      - name: Check output directory
+        run: |
+          if [ -d "output" ]; then
+            echo "Output directory exists"
+            ls -la output/
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose down
+          rm -rf output/*
+          rm -rf input/* 
