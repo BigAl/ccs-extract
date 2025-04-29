@@ -84,7 +84,11 @@ cp transaction_config.template.json transaction_config.json
 
 4. Build and run with Docker:
 ```bash
-docker-compose up --build
+# Build the Docker image
+docker build -t ccs-extract .
+
+# Run the container
+docker run -v $(pwd)/input:/app/input -v $(pwd)/output:/app/output -v $(pwd)/transaction_config.json:/app/transaction_config.json ccs-extract
 ```
 
 The Docker setup will:
@@ -347,3 +351,15 @@ Feel free to submit issues and enhancement requests!
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+
+### Security Considerations
+
+#### Docker Security
+The Docker container runs with:
+- A non-root user (`appuser`)
+- Secure file permissions (755 for directories, 644 for files)
+- Write access only to the output directory
+- Read-only access to input and configuration files
+
+#### Configuration Security
+Your `transaction_config.json` file contains personal information about your spending habits and should be kept private. The file is automatically added to `.gitignore` to prevent accidental commits.
