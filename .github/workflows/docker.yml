@@ -81,8 +81,8 @@ jobs:
           "
           # Set PDF file permissions
           chmod 666 input/sample.pdf
-          # Copy config file to input directory
-          cp transaction_config.json input/
+          # Copy example config file to input directory
+          cp transaction_config.example.json input/transaction_config.json
 
       - name: Run Docker tests
         run: |
