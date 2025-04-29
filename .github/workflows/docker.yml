@@ -42,10 +42,8 @@ jobs:
       - name: Create test environment
         run: |
           mkdir -p input output
-          # Set directory permissions to 755 (owner: rwx, group: rx, others: rx)
-          chmod 755 input output
-          # Set ownership to current user
-          chown -R $USER:$USER input output
+          # Set directory permissions to 777 to allow Docker container to write
+          chmod 777 input output
           cp transaction_config.example.json transaction_config.json
           # Create a simple PDF for testing using Python
           python3 -c "
@@ -55,6 +53,8 @@ jobs:
           c.drawString(100, 750, 'Sample Credit Card Statement')
           c.save()
           "
+          # Set PDF file permissions
+          chmod 666 input/sample.pdf
 
       - name: Run Docker Compose tests
         run: |
