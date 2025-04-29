@@ -2,6 +2,10 @@
 
 A Python utility for extracting transaction data from credit card statement PDFs and converting them to CSV format.
 
+[![Test Coverage](https://codecov.io/gh/BigAl/ccs-extract/branch/main/graph/badge.svg)](https://codecov.io/gh/BigAl/ccs-extract)
+[![Tests](https://github.com/BigAl/ccs-extract/actions/workflows/coverage.yml/badge.svg)](https://github.com/BigAl/ccs-extract/actions/workflows/coverage.yml)
+[![Docker Build](https://github.com/BigAl/ccs-extract/actions/workflows/docker.yml/badge.svg)](https://github.com/BigAl/ccs-extract/actions/workflows/docker.yml)
+
 ## Features
 
 - Extracts transaction data from credit card statement PDFs
