@@ -72,6 +72,8 @@ jobs:
           # Set directory permissions to 777 to allow Docker container to write
           chmod 777 input output
           cp transaction_config.example.json transaction_config.json
+          # Install reportlab for PDF generation
+          pip install reportlab
           # Create a simple PDF for testing using Python
           python3 -c "
           from reportlab.pdfgen import canvas
