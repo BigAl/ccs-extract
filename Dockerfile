@@ -18,10 +18,15 @@ VOLUME ["/app/input", "/app/output"]
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
+ENV PYTHONPATH=/app
 
-# Create a non-root user
-RUN useradd -m appuser && chown -R appuser:appuser /app
+# Create a non-root user and set up permissions
+RUN useradd -m -u 1000 appuser && \
+    mkdir -p /app/input /app/output && \
+    chown -R appuser:appuser /app && \
+    chmod -R 755 /app/input /app/output
+
 USER appuser
 
-# Set the entrypoint
-ENTRYPOINT ["python", "ccs_extract.py"] 
+# Set the entrypoint with error handling
+ENTRYPOINT ["python", "-u", "ccs_extract.py"] 

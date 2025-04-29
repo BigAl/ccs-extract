@@ -1,0 +1,16 @@
+services:
+  ccs-extract:
+    build: .
+    volumes:
+      - ./input:/app/input:Z
+      - ./output:/app/output:Z
+      - ./transaction_config.json:/app/transaction_config.json:Z
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app
+    healthcheck:
+      test: ["CMD", "python", "ccs_extract.py", "--validate-config"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s 
