@@ -34,6 +34,7 @@ try:
         ValidationError,
         OutputError
     )
+    from transaction_rules import TransactionRulesEngine
 except ImportError:
     # Fallback to default values if modules are not available
     DATE_FORMATS = {
@@ -86,22 +87,36 @@ except ImportError:
 # Set up logger
 logger = setup_logger(__name__)
 
-class StatementExtractor:
+class CreditCardStatementExtractor:
     """Main class for extracting transactions from credit card statements."""
     
-    def __init__(self, debug_mode: bool = False, base_dir: str = None):
-        """
-        Initialize the statement extractor.
+    def __init__(self, config_file: str = "transaction_config.json"):
+        """Initialize the extractor with configuration.
         
         Args:
-            debug_mode (bool): Whether to run in debug mode
-            base_dir (str): Base directory for output files. If None, uses current directory.
+            config_file: Path to the transaction configuration file
         """
-        self.debug_mode = debug_mode
+        self.config = self._load_config(config_file)
+        self.rules_engine = TransactionRulesEngine("transaction_rules.json")
+        self.debug_mode = False
         self.logger = logger
         self.current_year = datetime.now().year
         self.statement_text = ""
-        self.base_dir = base_dir if base_dir is not None else os.getcwd()
+        self.base_dir = os.getcwd()
+    
+    def _load_config(self, config_file: str) -> dict:
+        """Load configuration from a file.
+        
+        Args:
+            config_file: Path to the transaction configuration file
+            
+        Returns:
+            dict: Loaded configuration
+        """
+        # Implementation of _load_config method
+        # This is a placeholder and should be replaced with the actual implementation
+        # to load the configuration from the specified file
+        return {}
     
     def validate_pdf(self, pdf_path: str) -> None:
         """
@@ -352,6 +367,29 @@ class StatementExtractor:
             self.logger.error(f"Error processing statement: {str(e)}")
             raise
 
+    def _categorize_transaction(self, description: str, amount: float, date: datetime) -> str:
+        """Categorize a transaction using the rules engine.
+        
+        Args:
+            description: Transaction description
+            amount: Transaction amount
+            date: Transaction date
+            
+        Returns:
+            Category name
+        """
+        # Try custom rules first
+        category = self.rules_engine.apply_rules(description, amount, date)
+        if category:
+            return category
+            
+        # Fall back to default categories
+        for category, patterns in self.config["categories"].items():
+            for pattern in patterns:
+                if re.search(pattern, description, re.IGNORECASE):
+                    return category
+        return "Other"
+
 def parse_args() -> argparse.Namespace:
     """Parse command line arguments."""
     parser = argparse.ArgumentParser(
@@ -397,7 +435,7 @@ def main() -> None:
         pdf_file = args.pdf_file
     
     try:
-        extractor = StatementExtractor(debug_mode=args.debug)
+        extractor = CreditCardStatementExtractor(config_file="transaction_config.json")
         extractor.process_statement(pdf_file, args.output)
     except StatementExtractorError as e:
         logger.error(str(e))
