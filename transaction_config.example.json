@@ -1,0 +1,259 @@
+{
+    "merchant_patterns": [
+        {
+            "pattern": "(?i)space kitchen",
+            "normalized": "Space Kitchen"
+        },
+        {
+            "pattern": "(?i)soul origin",
+            "normalized": "Soul Origin"
+        },
+        {
+            "pattern": "(?i)bean origin",
+            "normalized": "Bean Origin"
+        },
+        {
+            "pattern": "(?i)bliss and espresso macquarie",
+            "normalized": "Bliss and Espresso Macquarie"
+        },
+        {
+            "pattern": "(?i)sushi sushi",
+            "normalized": "Sushi Sushi"
+        },
+        {
+            "pattern": "(?i)tfc sushi",
+            "normalized": "TFC Sushi"
+        },
+        {
+            "pattern": "(?i)zambrero",
+            "normalized": "Zambrero"
+        },
+        {
+            "pattern": "(?i)the spence grocer",
+            "normalized": "The Spence Grocer"
+        },
+        {
+            "pattern": "(?i)mcdonalds|mcdonald's|maccas",
+            "normalized": "McDonald's"
+        },
+        {
+            "pattern": "(?i)millsandgrills",
+            "normalized": "Mills and Grills"
+        },
+        {
+            "pattern": "(?i)dickson taphouse",
+            "normalized": "Dickson Taphouse"
+        },
+        {
+            "pattern": "(?i)captains flat hote",
+            "normalized": "Captains Flat Hotel"
+        },
+        {
+            "pattern": "(?i)petpostaust",
+            "normalized": "PetPost Australia"
+        },
+        {
+            "pattern": "(?i)k9 and co adventure",
+            "normalized": "K9 and Co Adventure"
+        },
+        {
+            "pattern": "(?i)petstock pty ltd",
+            "normalized": "Petstock Pty Ltd"
+        },
+        {
+            "pattern": "(?i)petbarn",
+            "normalized": "Petbarn"
+        },
+        {
+            "pattern": "(?i)pet warehouse",
+            "normalized": "Pet Warehouse"
+        },
+        {
+            "pattern": "(?i)pet circle",
+            "normalized": "Pet Circle"
+        },
+        {
+            "pattern": "(?i)transport dickson",
+            "normalized": "Transport Dickson"
+        },
+        {
+            "pattern": "(?i)apple\\.com|itunes",
+            "normalized": "Apple"
+        },
+        {
+            "pattern": "(?i)ticketek",
+            "normalized": "Ticketek"
+        },
+        {
+            "pattern": "(?i)hoyts",
+            "normalized": "Hoyts"
+        },
+        {
+            "pattern": "(?i)www\\.endota\\.com\\.au",
+            "normalized": "Endota Spa"
+        },
+        {
+            "pattern": "(?i)belong",
+            "normalized": "Belong"
+        },
+        {
+            "pattern": "(?i)accor",
+            "normalized": "Accor"
+        },
+        {
+            "pattern": "(?i)amcal|amcal pharmacy",
+            "normalized": "Amcal Pharmacy"
+        },
+        {
+            "pattern": "(?i)endota spa",
+            "normalized": "Endota Spa"
+        },
+        {
+            "pattern": "(?i)belconnen chiro",
+            "normalized": "Belconnen Chiropractor"
+        },
+        {
+            "pattern": "(?i)specsavers",
+            "normalized": "Specsavers"
+        },
+        {
+            "pattern": "(?i)mitre 10|mitre10",
+            "normalized": "Mitre 10"
+        },
+        {
+            "pattern": "(?i)home hardware",
+            "normalized": "Home Hardware"
+        },
+        {
+            "pattern": "(?i)hardware store|hardware shop",
+            "normalized": "Hardware Store"
+        },
+        {
+            "pattern": "(?i)miles franklin",
+            "normalized": "Miles Franklin"
+        },
+        {
+            "pattern": "(?i)bounce holdings",
+            "normalized": "Bounce Holdings"
+        },
+        {
+            "pattern": "(?i)melba tennis club",
+            "normalized": "Melba Tennis Club"
+        },
+        {
+            "pattern": "(?i)on the line tennis melba",
+            "normalized": "On The Line Tennis Melba"
+        },
+        {
+            "pattern": "(?i)harris scarfe",
+            "normalized": "Harris Scarfe"
+        },
+        {
+            "pattern": "(?i)best and less",
+            "normalized": "Best and Less"
+        },
+        {
+            "pattern": "(?i)smiggle pty ltd",
+            "normalized": "Smiggle"
+        },
+        {
+            "pattern": "(?i)canberra southern yarralumla",
+            "normalized": "Canberra Southern Yarralumla"
+        },
+        {
+            "pattern": "(?i)rocksalt",
+            "normalized": "Rocksalt"
+        },
+        {
+            "pattern": "(?i)via dolce canberra",
+            "normalized": "Via Dolce Canberra"
+        }
+    ],
+    "categories": {
+        "Dining": [
+            "soul origin",
+            "space kitchen",
+            "bean origin",
+            "bliss and espresso macquarie",
+            "sushi sushi",
+            "tfc sushi",
+            "zambrero",
+            "the spence grocer",
+            "mcdonalds",
+            "mcdonald's",
+            "maccas",
+            "millsandgrills",
+            "mills and grills",
+            "dickson taphouse",
+            "canberra southern yarralumla",
+            "rocksalt",
+            "via dolce canberra",
+            "captains flat hotel",
+            "bravo vino pty ltd"
+        ],
+        "Pet Expenses": [
+            "petpostaust",
+            "k9 and co adventure",
+            "petstock pty ltd",
+            "petbarn",
+            "vet",
+            "veterinary",
+            "pet warehouse",
+            "pet circle",
+            "pet shop",
+            "pet",
+            "animal",
+            "pet care",
+            "pet supplies",
+            "animal hospital",
+            "grooming",
+            "pet food",
+            "pet accessories",
+            "pet medication"
+        ],
+        "Transport": [
+            "transport dickson",
+            "car park",
+            "parking fee",
+            "parking ticket",
+            "parking meter",
+            "parking permit"
+        ],
+        "Entertainment": [
+            "ticketek",
+            "hoyts"
+        ],
+        "Shopping": [
+            "apple.com",
+            "itunes",
+            "mitre 10",
+            "home hardware",
+            "hardware store",
+            "hardware shop",
+            "harris scarfe",
+            "best and less",
+            "smiggle"
+        ],
+        "Utilities": [
+            "belong"
+        ],
+        "Health": [
+            "amcal",
+            "amcal pharmacy",
+            "endota spa",
+            "www.endota.com.au",
+            "belconnen chiro",
+            "belconnen chiropractor",
+            "specsavers"
+        ],
+        "Education": [
+            "miles franklin",
+            "bounce holdings",
+            "melba tennis club",
+            "on the line tennis melba"
+        ],
+        "Holiday": [
+            "accor"
+        ]
+    }
+} 
