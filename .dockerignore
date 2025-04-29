@@ -41,7 +41,6 @@ output/
 *.csv
 *.pdf
 *.txt
-transaction_config.json
 .git/
 .gitignore
 .github/
@@ -89,9 +88,10 @@ build/
 *.db-20
 
 # Docker
-Dockerfile
 .dockerignore
 
 # Allow these files
 !requirements.txt
-!setup.py 
+!setup.py
+!transaction_config.json
+!Dockerfile 

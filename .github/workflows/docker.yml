@@ -81,11 +81,13 @@ jobs:
           "
           # Set PDF file permissions
           chmod 666 input/sample.pdf
+          # Copy config file to input directory
+          cp transaction_config.json input/
 
       - name: Run Docker tests
         run: |
           # Test basic container functionality
-          docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output:/app/output:rw ccs-extract:latest /app/input/sample.pdf --output /app/output/sample.csv
+          docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output:/app/output:rw ccs-extract:latest /app/input/sample.pdf --output /app/output/sample.csv --config /app/input/transaction_config.json
           
           # Check if output file was created
           if [ ! -f "output/sample.csv" ]; then

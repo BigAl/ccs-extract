@@ -25,6 +25,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
           
+      - name: Set up test environment
+        run: |
+          # Create test directories
+          mkdir -p input output
+          # Copy config file to input directory
+          cp transaction_config.json input/
+          # Install reportlab for PDF generation
+          pip install reportlab
+          # Create a simple PDF for testing
+          python3 -c "
+          from reportlab.pdfgen import canvas
+          from reportlab.lib.pagesizes import letter
+          c = canvas.Canvas('input/sample.pdf', pagesize=letter)
+          c.drawString(100, 750, 'Sample Credit Card Statement')
+          c.save()
+          "
+          
       - name: Run tests with coverage
         run: |
           pytest --cov=./ --cov-report=xml
@@ -37,4 +54,9 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           flags: unittests
           name: codecov-umbrella
-          verbose: true 
+          verbose: true
+          
+      - name: Cleanup
+        if: always()
+        run: |
+          rm -rf input output 
