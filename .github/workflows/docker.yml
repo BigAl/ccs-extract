@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'Dockerfile'
-      - 'docker-compose.yml'
+      - 'compose.yaml'
       - 'requirements.txt'
       - 'ccs_extract.py'
       - '.github/workflows/docker.yml'
@@ -13,7 +13,7 @@ on:
     branches: [ main ]
     paths:
       - 'Dockerfile'
-      - 'docker-compose.yml'
+      - 'compose.yaml'
       - 'requirements.txt'
       - 'ccs_extract.py'
       - '.github/workflows/docker.yml'
@@ -42,6 +42,8 @@ jobs:
       - name: Create test environment
         run: |
           mkdir -p input output
+          # Set directory permissions to 755 (owner: rwx, group: rx, others: rx)
+          chmod 755 input output
           cp transaction_config.example.json transaction_config.json
           # Create a simple PDF for testing
           echo "%PDF-1.4" > input/sample.pdf
@@ -72,17 +74,19 @@ jobs:
           echo "startxref" >> input/sample.pdf
           echo "242" >> input/sample.pdf
           echo "%%EOF" >> input/sample.pdf
+          # Set file permissions to 644 (owner: rw, group: r, others: r)
+          chmod 644 input/sample.pdf
 
       - name: Run Docker Compose tests
         run: |
           # Test basic container startup
-          docker compose run --rm ccs-extract --help
+          docker compose -f compose.yaml run --rm ccs-extract --help
           
           # Test configuration validation
-          docker compose run --rm ccs-extract --validate-config
+          docker compose -f compose.yaml run --rm ccs-extract --validate-config
           
           # Test with sample PDF
-          docker compose run --rm ccs-extract input/sample.pdf
+          docker compose -f compose.yaml run --rm ccs-extract input/sample.pdf
 
       - name: Check output directory
         run: |
@@ -94,6 +98,6 @@ jobs:
       - name: Cleanup
         if: always()
         run: |
-          docker compose down
+          docker compose -f compose.yaml down
           rm -rf output/*
           rm -rf input/* 
