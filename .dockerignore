@@ -93,5 +93,5 @@ build/
 # Allow these files
 !requirements.txt
 !setup.py
-!transaction_config.json
+!transaction_config.example.json
 !Dockerfile 
