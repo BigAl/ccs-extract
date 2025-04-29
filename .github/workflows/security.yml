@@ -18,17 +18,26 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python 3.13.3
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.13.3'
           cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f "requirements.txt" ]; then
+            pip install -r requirements.txt
+          else
+            pip install -e ".[dev]"
+          fi
 
       - name: Cache Trivy DB
         uses: actions/cache@v4
         with:
           path: ~/.cache/trivy
-          key: ${{ runner.os }}-trivy-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-trivy-${{ hashFiles('setup.py', 'requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-trivy-
 
