@@ -25,6 +25,8 @@ A Python utility for extracting transaction data from credit card statement PDFs
 
 ## Installation
 
+### Option 1: Local Installation
+
 1. Clone this repository:
 ```bash
 git clone https://github.com/yourusername/ccs-extract.git
@@ -44,6 +46,43 @@ The setup script will:
 - Create a configuration file from the template
 
 The virtual environment will remain active in your current shell session. You can run the tool immediately after setup.
+
+### Option 2: Docker Installation
+
+1. Clone this repository:
+```bash
+git clone https://github.com/yourusername/ccs-extract.git
+cd ccs-extract
+```
+
+2. Create necessary directories:
+```bash
+mkdir -p input output
+```
+
+3. Copy your configuration file:
+```bash
+cp transaction_config.example.json transaction_config.json
+```
+
+4. Build and run with Docker Compose:
+```bash
+docker-compose build
+docker-compose run --rm ccs-extract [pdf_file]
+```
+
+Or run directly with Docker:
+```bash
+docker build -t ccs-extract .
+docker run -v $(pwd)/input:/app/input -v $(pwd)/output:/app/output -v $(pwd)/transaction_config.json:/app/transaction_config.json ccs-extract [pdf_file]
+```
+
+The Docker setup will:
+- Create a containerized environment
+- Mount input/output directories
+- Use your configuration file
+- Process PDF files from the input directory
+- Save results to the output directory
 
 ### Deactivating the Virtual Environment
 
