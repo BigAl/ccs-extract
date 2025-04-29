@@ -4,7 +4,7 @@ FROM python:3.13-slim
 # Set working directory
 WORKDIR /app
 
-# Copy requirements first to leverage Docker cache
+# Copy setup files first to leverage Docker cache
 COPY setup.py .
 
 # Install dependencies
@@ -23,10 +23,17 @@ ENV PYTHONPATH=/app
 # Create a non-root user and set up permissions
 RUN useradd -m -u 1000 appuser && \
     mkdir -p /app/input /app/output && \
+    cp transaction_config.template.json transaction_config.json && \
     chown -R appuser:appuser /app && \
-    chmod -R 755 /app/input /app/output
+    # Set directory permissions to 755 (owner: rwx, group: rx, others: rx)
+    chmod 755 /app/input /app/output && \
+    # Set file permissions to 644 (owner: rw, group: r, others: r)
+    chmod 644 /app/transaction_config.json && \
+    # Ensure appuser can write to output directory
+    chmod g+w /app/output
 
+# Switch to non-root user
 USER appuser
 
-# Set the entrypoint with error handling
-ENTRYPOINT ["python", "-u", "ccs_extract.py"] 
+# Set the entrypoint
+ENTRYPOINT ["python", "ccs_extract.py"] 

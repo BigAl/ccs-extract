@@ -23,21 +23,19 @@ jobs:
         with:
           python-version: '3.13.3'
           cache: 'pip'
+          cache-dependency-path: 'setup.py'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          if [ -f "requirements.txt" ]; then
-            pip install -r requirements.txt
-          else
-            pip install -e ".[dev]"
-          fi
+          pip install -e ".[dev]"
+          pip install pip-audit
 
       - name: Cache Trivy DB
         uses: actions/cache@v4
         with:
           path: ~/.cache/trivy
-          key: ${{ runner.os }}-trivy-${{ hashFiles('setup.py', 'requirements.txt') }}
+          key: ${{ runner.os }}-trivy-${{ hashFiles('setup.py') }}
           restore-keys: |
             ${{ runner.os }}-trivy-
 
@@ -59,13 +57,9 @@ jobs:
           output-format: json
           output-file: bandit-results.json
 
-      - name: Run Safety check
-        uses: pyupio/safety@master
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          check: true
-          output-format: json
-          output-file: safety-results.json
+      - name: Run pip-audit
+        run: |
+          pip-audit --format json --output pip-audit-results.json
 
       - name: Upload security scan results
         uses: actions/upload-artifact@v4
@@ -73,5 +67,5 @@ jobs:
           name: security-scan-results
           path: |
             bandit-results.json
-            safety-results.json
+            pip-audit-results.json
           retention-days: 7 
