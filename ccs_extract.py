@@ -13,6 +13,7 @@ import csv
 import argparse
 from datetime import datetime
 from typing import List, Dict, Optional, Any
+import json
 
 from pypdf import PdfReader
 from tqdm import tqdm
@@ -112,11 +113,19 @@ class CreditCardStatementExtractor:
             
         Returns:
             dict: Loaded configuration
+            
+        Raises:
+            StatementExtractorError: If there's an error loading the configuration
         """
-        # Implementation of _load_config method
-        # This is a placeholder and should be replaced with the actual implementation
-        # to load the configuration from the specified file
-        return {}
+        try:
+            from transaction_categories import load_custom_config
+            merchant_patterns, categories = load_custom_config(config_file)
+            return {
+                "merchant_patterns": merchant_patterns,
+                "categories": categories
+            }
+        except (FileNotFoundError, json.JSONDecodeError, ValidationError) as e:
+            raise StatementExtractorError(f"Error loading configuration: {str(e)}")
     
     def validate_pdf(self, pdf_path: str) -> None:
         """
@@ -390,53 +399,30 @@ class CreditCardStatementExtractor:
                     return category
         return "Other"
 
-def parse_args() -> argparse.Namespace:
+def parse_args():
     """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description='Extract transactions from credit card statement PDFs.'
-    )
-    parser.add_argument(
-        'pdf_file',
-        nargs='?',
-        help='Path to the PDF file to process'
-    )
-    parser.add_argument(
-        '--debug',
-        action='store_true',
-        help='Enable debug mode'
-    )
-    parser.add_argument(
-        '--output',
-        help='Custom output file path'
-    )
-    parser.add_argument(
-        '--validate-config',
-        action='store_true',
-        help='Validate the transaction configuration file'
-    )
-    return parser.parse_args()
+    parser = argparse.ArgumentParser(description='Extract transactions from credit card statements')
+    parser.add_argument('pdf_file', nargs='?', help='PDF file to process')
+    parser.add_argument('--output', help='Output CSV file')
+    parser.add_argument('--debug', action='store_true', help='Enable debug mode')
+    parser.add_argument('--config', help='Path to configuration file')
+
+    args = parser.parse_args()
+
+    # If no PDF file is provided, enter interactive mode
+    if args.pdf_file is None:
+        args.pdf_file = input('Enter the path to the PDF file: ')
+
+    return args
 
 def main() -> None:
     """Main entry point."""
     args = parse_args()
     
-    # Handle configuration validation
-    if args.validate_config:
-        from transaction_categories import validate_config_file
-        if validate_config_file():
-            sys.exit(0)
-        else:
-            sys.exit(1)
-    
-    # Handle interactive mode
-    if not args.pdf_file:
-        pdf_file = input("Enter the path to your PDF file: ")
-    else:
-        pdf_file = args.pdf_file
-    
     try:
-        extractor = CreditCardStatementExtractor(config_file="transaction_config.json")
-        extractor.process_statement(pdf_file, args.output)
+        extractor = CreditCardStatementExtractor(config_file=args.config)
+        extractor.debug_mode = args.debug
+        extractor.process_statement(args.pdf_file, args.output)
     except StatementExtractorError as e:
         logger.error(str(e))
         sys.exit(1)
