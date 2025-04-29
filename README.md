@@ -6,7 +6,6 @@ A Python utility for extracting transaction data from credit card statement PDFs
 [![Tests](https://github.com/BigAl/ccs-extract/actions/workflows/coverage.yml/badge.svg)](https://github.com/BigAl/ccs-extract/actions/workflows/coverage.yml)
 [![Docker Build](https://github.com/BigAl/ccs-extract/actions/workflows/docker.yml/badge.svg)](https://github.com/BigAl/ccs-extract/actions/workflows/docker.yml)
 
-
 ## Features
 
 - Extracts transaction data from credit card statement PDFs
@@ -131,22 +130,6 @@ pytest
 Run tests with coverage:
 ```bash
 pytest --cov=. --cov-report=term-missing
-```
-
-### Code Quality
-
-This project uses several tools to maintain code quality:
-
-- **Black**: Code formatting
-- **isort**: Import sorting
-- **Flake8**: Linting
-- **MyPy**: Static type checking
-- **pre-commit**: Git hooks for code quality
-
-These tools are automatically run on every commit. To run them manually:
-
-```bash
-pre-commit run --all-files
 ```
 
 ### Contributing
