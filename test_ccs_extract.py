@@ -362,7 +362,8 @@ def test_main_interactive_mode(monkeypatch):
     # Mock input and create a temporary PDF
     with patch('builtins.input', return_value='test.pdf'), \
          patch('ccs_extract.CreditCardStatementExtractor.process_statement'), \
-         patch('argparse.ArgumentParser.parse_args') as mock_parse_args:
+         patch('argparse.ArgumentParser.parse_args') as mock_parse_args, \
+         patch('transaction_categories.load_custom_config') as mock_load_config:
         # Mock the parsed args
         mock_args = MagicMock()
         mock_args.pdf_file = 'test.pdf'
@@ -370,6 +371,9 @@ def test_main_interactive_mode(monkeypatch):
         mock_args.debug = False
         mock_args.config = None
         mock_parse_args.return_value = mock_args
+        
+        # Mock the config loading
+        mock_load_config.return_value = ([], {})
         
         # Call main without arguments
         with patch.object(sys, 'argv', ['ccs_extract.py']):
