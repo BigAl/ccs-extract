@@ -26,8 +26,8 @@ wheels/
 
 # Virtual Environment
 venv/
-env/
 ENV/
+env/
 
 # IDE
 .idea/
@@ -36,11 +36,62 @@ ENV/
 *.swo
 
 # Project specific
-*.log
+input/
+output/
 *.csv
-*_debug.txt
+*.pdf
+*.txt
 transaction_config.json
+.git/
+.gitignore
+.github/
+.pytest_cache/
+.coverage
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+*.sqlite
+*.db
+*.sqlite3
+*.db3
+*.sqlitedb
+*.db-journal
+*.db-wal
+*.db-shm
+*.db-1
+*.db-2
+*.db-3
+*.db-4
+*.db-5
+*.db-6
+*.db-7
+*.db-8
+*.db-9
+*.db-10
+*.db-11
+*.db-12
+*.db-13
+*.db-14
+*.db-15
+*.db-16
+*.db-17
+*.db-18
+*.db-19
+*.db-20
 
 # Docker
 Dockerfile
-.dockerignore 
+.dockerignore
+
+# Allow these files
+!requirements.txt
+!setup.py 

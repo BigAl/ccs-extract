@@ -311,7 +311,7 @@ class StatementExtractor:
         Args:
             pdf_path (str): Path to the PDF file
             output_path (str, optional): Path for the output CSV file. If not provided,
-                                       will use the input filename with .csv extension.
+                                       will use the input filename with .csv extension in the output directory.
         """
         try:
             # Validate PDF
@@ -325,8 +325,10 @@ class StatementExtractor:
             
             # Determine output path
             if output_path is None:
-                # Use input filename but replace .pdf with .csv
-                output_path = os.path.splitext(pdf_path)[0] + '.csv'
+                # Use input filename but place in output directory with .csv extension
+                input_filename = os.path.basename(pdf_path)
+                base_filename = os.path.splitext(input_filename)[0] + '.csv'
+                output_path = os.path.join('output', base_filename)
             
             # Write to CSV
             self.write_to_csv(transactions, output_path)
