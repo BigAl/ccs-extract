@@ -5,6 +5,8 @@ A Python utility for extracting transaction data from credit card statement PDFs
 [![Test Coverage](https://codecov.io/gh/BigAl/ccs-extract/branch/main/graph/badge.svg)](https://codecov.io/gh/BigAl/ccs-extract)
 [![Tests](https://github.com/BigAl/ccs-extract/actions/workflows/coverage.yml/badge.svg)](https://github.com/BigAl/ccs-extract/actions/workflows/coverage.yml)
 [![Docker Build](https://github.com/BigAl/ccs-extract/actions/workflows/docker.yml/badge.svg)](https://github.com/BigAl/ccs-extract/actions/workflows/docker.yml)
+[![Security Scan](https://github.com/BigAl/ccs-extract/actions/workflows/security.yml/badge.svg)](https://github.com/BigAl/ccs-extract/actions/workflows/security.yml)
+[![Code Quality](https://github.com/BigAl/ccs-extract/actions/workflows/code-quality.yml/badge.svg)](https://github.com/BigAl/ccs-extract/actions/workflows/code-quality.yml)
 
 ## Features
 
@@ -19,6 +21,9 @@ A Python utility for extracting transaction data from credit card statement PDFs
 - Customizable output file location
 - Normalizes merchant names
 - Categorizes transactions automatically
+- Continuous Integration and Deployment with GitHub Actions
+- Automated security scanning
+- Code quality checks
 
 ## Requirements
 
@@ -26,6 +31,7 @@ A Python utility for extracting transaction data from credit card statement PDFs
 - pypdf
 - tqdm
 - jsonschema
+- reportlab (for testing)
 
 ## Installation
 
@@ -87,6 +93,80 @@ The Docker setup will:
 - Use your configuration file
 - Process PDF files from the input directory
 - Save results to the output directory
+
+## Development
+
+### Local Development Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/ccs-extract.git
+   cd ccs-extract
+   ```
+
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install development dependencies:
+   ```bash
+   pip install -e ".[dev]"
+   ```
+
+4. Set up pre-commit hooks:
+   ```bash
+   pre-commit install
+   ```
+
+5. Run tests:
+   ```bash
+   pytest
+   ```
+
+### Running Tests
+
+Run the test suite:
+```bash
+pytest
+```
+
+Run tests with coverage:
+```bash
+pytest --cov=. --cov-report=term-missing
+```
+
+### Code Quality
+
+This project uses several tools to maintain code quality:
+
+- **Black**: Code formatting
+- **isort**: Import sorting
+- **Flake8**: Linting
+- **MyPy**: Static type checking
+- **pre-commit**: Git hooks for code quality
+
+These tools are automatically run on every commit. To run them manually:
+
+```bash
+pre-commit run --all-files
+```
+
+### Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests and ensure code quality
+5. Submit a pull request
+
+### Release Process
+
+1. Update version in `setup.py`
+2. Update CHANGELOG.md
+3. Create a new release on GitHub
+4. The release workflow will automatically publish to PyPI
 
 ### Deactivating the Virtual Environment
 
