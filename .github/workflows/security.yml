@@ -13,7 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -29,7 +28,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
-          pip install pip-audit
+          pip install bandit pip-audit
 
       - name: Cache Trivy DB
         uses: actions/cache@v4
@@ -50,16 +49,13 @@ jobs:
           severity: 'CRITICAL,HIGH'
           cache-dir: ~/.cache/trivy
 
-      - name: Run Bandit security linter
-        uses: PyCQA/bandit@main
-        with:
-          args: -r . -ll
-          output-format: json
-          output-file: bandit-results.json
+      - name: Run Bandit security scan
+        run: |
+          bandit -r . -c pyproject.toml
 
       - name: Run pip-audit
         run: |
-          pip-audit --format json --output pip-audit-results.json
+          pip-audit
 
       - name: Upload security scan results
         uses: actions/upload-artifact@v4
