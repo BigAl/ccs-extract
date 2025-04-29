@@ -51,6 +51,13 @@ The setup script will:
 
 The virtual environment will remain active in your current shell session. You can run the tool immediately after setup.
 
+3. Copy the configuration template and customize it:
+```bash
+cp transaction_config.template.json transaction_config.json
+```
+
+4. Edit `transaction_config.json` to add your own merchant patterns and categories
+
 ### Option 2: Docker Installation
 
 1. Clone this repository:
@@ -64,21 +71,14 @@ cd ccs-extract
 mkdir -p input output
 ```
 
-3. Copy your configuration file:
+3. Copy and customize the configuration:
 ```bash
-cp transaction_config.example.json transaction_config.json
+cp transaction_config.template.json transaction_config.json
 ```
 
-4. Build and run with Docker Compose:
+4. Build and run with Docker:
 ```bash
-docker-compose build
-docker-compose run --rm ccs-extract [pdf_file]
-```
-
-Or run directly with Docker:
-```bash
-docker build -t ccs-extract .
-docker run -v $(pwd)/input:/app/input -v $(pwd)/output:/app/output -v $(pwd)/transaction_config.json:/app/transaction_config.json ccs-extract [pdf_file]
+docker-compose up --build
 ```
 
 The Docker setup will:
@@ -173,27 +173,28 @@ The script uses a JSON configuration file (`transaction_config.json`) to manage 
 Your `transaction_config.json` file contains personal information about your spending habits and should be kept private. The file is automatically added to `.gitignore` to prevent accidental commits.
 
 To get started:
-1. Copy `transaction_config.example.json` to `transaction_config.json`
-2. Customize the patterns and categories to match your transactions
-3. Keep your `transaction_config.json` private and never commit it to version control
+1. Copy the template: `cp transaction_config.template.json transaction_config.json`
+2. Edit the patterns in your copy to match your needs
+3. The configuration has two main sections:
+   - `merchant_patterns`: Rules for normalizing merchant names
+   - `categories`: Keywords for categorizing transactions
 
-#### File Structure
-
+Example pattern:
 ```json
 {
-  "merchant_patterns": [
-    {
-      "pattern": "(?i)supermarket|grocery",
-      "normalized": "Generic Supermarket"
-    },
-    // ... more patterns ...
-  ],
-  "categories": {
-    "Groceries": ["supermarket", "grocery", ...],
-    "Dining": ["restaurant", "cafe", ...],
-    // ... more categories ...
-  }
+    "pattern": "(?i)woolworths(?:\\s+supermarket)?|woolies",
+    "normalized": "Woolworths"
 }
+```
+
+Example category:
+```json
+"Groceries": [
+    "woolworths",
+    "coles",
+    "aldi",
+    "supermarket"
+]
 ```
 
 #### Customization

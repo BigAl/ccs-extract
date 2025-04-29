@@ -37,8 +37,8 @@ CONFIG_SCHEMA = {
 # Default merchant patterns and categories
 DEFAULT_MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     # Grocery stores
-    (r'(?i)woolworths|woolies', 'Woolworths'),
-    (r'(?i)coles', 'Coles'),
+    (r'(?i)woolworths(?:\s+supermarket)?|woolies', 'Woolworths'),
+    (r'(?i)coles(?:\s+supermarket)?', 'Coles'),
     (r'(?i)aldi', 'Aldi'),
     (r'(?i)iga', 'IGA'),
     (r'(?i)nestle|nestlé|nestleau', 'Nestlé Australia'),
@@ -142,6 +142,9 @@ DEFAULT_MERCHANT_PATTERNS: List[Tuple[str, str]] = [
     (r'(?i)canberra southern yarralumla', 'Canberra Southern Yarralumla'),
     (r'(?i)rocksalt', 'Rocksalt'),
     (r'(?i)via dolce canberra', 'Via Dolce Canberra'),
+    
+    # Generic patterns (should be last)
+    (r'(?i)supermarket', 'Generic Supermarket'),
 ]
 
 # Default transaction categories and their keywords
@@ -164,15 +167,18 @@ DEFAULT_CATEGORIES: Dict[str, List[str]] = {
 def load_custom_config():
     """Load custom merchant patterns and categories from config file if available."""
     config_path = os.path.join(os.path.dirname(__file__), 'transaction_config.json')
+    print(f"Loading configuration from: {config_path}")
     
     if os.path.exists(config_path):
         try:
             with open(config_path, 'r') as f:
                 config = json.load(f)
+                print("Successfully loaded configuration file")
                 
             # Validate configuration against schema
             try:
                 validate(instance=config, schema=CONFIG_SCHEMA)
+                print("Configuration validation successful")
             except ValidationError as e:
                 print(f"Warning: Invalid configuration format: {e}")
                 return DEFAULT_MERCHANT_PATTERNS, DEFAULT_CATEGORIES
@@ -180,12 +186,14 @@ def load_custom_config():
             # Convert JSON format to the expected tuple/list format
             merchant_patterns = [(item['pattern'], item['normalized']) for item in config.get('merchant_patterns', [])]
             categories = config.get('categories', {})
+            print(f"Loaded {len(merchant_patterns)} merchant patterns and {len(categories)} categories")
             
             return merchant_patterns, categories
         except Exception as e:
             print(f"Warning: Could not load custom configuration: {e}")
             return DEFAULT_MERCHANT_PATTERNS, DEFAULT_CATEGORIES
     else:
+        print("Configuration file not found, using defaults")
         # Create a default config file if it doesn't exist
         create_default_config(config_path)
         return DEFAULT_MERCHANT_PATTERNS, DEFAULT_CATEGORIES
@@ -226,9 +234,12 @@ def normalize_merchant(description: str) -> str:
     # Remove PayPal payment prefix if present
     description = re.sub(r'^PAYPAL \*', '', description)
     
+    # Try to match specific patterns first
     for pattern, normalized in MERCHANT_PATTERNS:
-        if re.search(pattern, description):
+        if re.search(pattern, description, re.IGNORECASE):
             return normalized
+    
+    # If no specific pattern matches, return the original description
     return description
 
 def categorize_transaction(description: str) -> str:
@@ -247,10 +258,12 @@ def categorize_transaction(description: str) -> str:
     # Remove PayPal payment prefix if present
     description = re.sub(r'^PAYPAL \*', '', description)
     
-    description_lower = description.lower()
+    # First try to match based on normalized merchant name
+    normalized = normalize_merchant(description)
     
+    # Then try to match based on keywords
     for category, keywords in CATEGORIES.items():
-        if any(keyword in description_lower for keyword in keywords):
+        if any(re.search(rf'(?i){re.escape(keyword)}', description) for keyword in keywords):
             return category
     
     return 'Other'

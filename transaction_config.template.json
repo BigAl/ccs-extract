@@ -1,0 +1,38 @@
+{
+    "merchant_patterns": [
+        {
+            "pattern": "(?i)woolworths(?:\\s+supermarket)?|woolies",
+            "normalized": "Woolworths"
+        },
+        {
+            "pattern": "(?i)coles(?:\\s+supermarket)?",
+            "normalized": "Coles"
+        },
+        {
+            "pattern": "(?i)cafe|coffee shop",
+            "normalized": "Cafe"
+        },
+        {
+            "pattern": "(?i)restaurant",
+            "normalized": "Restaurant"
+        }
+    ],
+    "categories": {
+        "Groceries": [
+            "woolworths",
+            "coles",
+            "aldi",
+            "iga",
+            "supermarket"
+        ],
+        "Dining": [
+            "restaurant",
+            "cafe",
+            "coffee",
+            "pub",
+            "tavern",
+            "bistro"
+        ],
+        "Other": []
+    }
+} 
