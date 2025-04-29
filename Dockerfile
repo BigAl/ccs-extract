@@ -11,7 +11,11 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements first to leverage Docker cache
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY setup.py .
+
+# Install both main and dev dependencies
+RUN pip install --no-cache-dir -r requirements.txt && \
+    pip install --no-cache-dir -e ".[dev]"
 
 # Copy the rest of the application
 COPY . .
