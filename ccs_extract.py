@@ -89,17 +89,19 @@ logger = setup_logger(__name__)
 class StatementExtractor:
     """Main class for extracting transactions from credit card statements."""
     
-    def __init__(self, debug_mode: bool = False):
+    def __init__(self, debug_mode: bool = False, base_dir: str = None):
         """
         Initialize the statement extractor.
         
         Args:
             debug_mode (bool): Whether to run in debug mode
+            base_dir (str): Base directory for output files. If None, uses current directory.
         """
         self.debug_mode = debug_mode
         self.logger = logger
         self.current_year = datetime.now().year
         self.statement_text = ""
+        self.base_dir = base_dir if base_dir is not None else os.getcwd()
     
     def validate_pdf(self, pdf_path: str) -> None:
         """
@@ -328,7 +330,10 @@ class StatementExtractor:
                 # Use input filename but place in output directory with .csv extension
                 input_filename = os.path.basename(pdf_path)
                 base_filename = os.path.splitext(input_filename)[0] + '.csv'
-                output_path = os.path.join('output', base_filename)
+                output_path = os.path.join(self.base_dir, 'output', base_filename)
+            
+            # Create output directory if it doesn't exist
+            os.makedirs(os.path.dirname(output_path), exist_ok=True)
             
             # Write to CSV
             self.write_to_csv(transactions, output_path)

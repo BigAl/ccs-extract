@@ -22,9 +22,20 @@ SAMPLE_TRANSACTION_TEXT = f"""
 """
 
 @pytest.fixture
-def extractor():
+def extractor(tmp_path):
     """Create a StatementExtractor instance for testing."""
-    return StatementExtractor(debug_mode=True)
+    # Create output directory
+    output_dir = tmp_path / "output"
+    output_dir.mkdir()
+    return StatementExtractor(debug_mode=True, base_dir=str(tmp_path))
+
+@pytest.fixture
+def test_pdf(tmp_path):
+    """Create a test PDF file."""
+    pdf_path = tmp_path / "test.pdf"
+    with open(pdf_path, 'wb') as f:
+        f.write(b'%PDF-1.4\n')  # Write minimal PDF header
+    return pdf_path
 
 def test_validate_pdf_valid_file(extractor, tmp_path):
     """Test PDF validation with a valid file."""
@@ -166,13 +177,8 @@ def test_write_to_csv_empty(extractor, tmp_path):
     assert 'Amount' in content
     assert len(content.splitlines()) == 1  # Only header
 
-def test_process_statement_default_output(extractor, tmp_path):
+def test_process_statement_default_output(extractor, test_pdf, tmp_path):
     """Test processing statement with default output path."""
-    # Create a temporary PDF file
-    pdf_path = tmp_path / "test.pdf"
-    with open(pdf_path, 'wb') as f:
-        f.write(b'%PDF-1.4\n')  # Write minimal PDF header
-    
     # Mock the PDF reader
     with patch('ccs_extract.PdfReader') as mock_pdf_reader:
         mock_page = MagicMock()
@@ -180,22 +186,17 @@ def test_process_statement_default_output(extractor, tmp_path):
         mock_pdf_reader.return_value.pages = [mock_page]
         
         # Process statement
-        extractor.process_statement(str(pdf_path))
+        extractor.process_statement(str(test_pdf))
         
         # Check default output file was created
-        default_output = tmp_path / "test.csv"
+        default_output = tmp_path / "output" / "test.csv"
         assert default_output.exists()
         content = default_output.read_text()
         assert 'Transaction Date' in content
         assert 'GROCERY STORE' in content
 
-def test_process_statement_custom_output(extractor, tmp_path):
+def test_process_statement_custom_output(extractor, test_pdf, tmp_path):
     """Test processing statement with custom output path."""
-    # Create a temporary PDF file
-    pdf_path = tmp_path / "test.pdf"
-    with open(pdf_path, 'wb') as f:
-        f.write(b'%PDF-1.4\n')  # Write minimal PDF header
-    
     # Create custom output path
     custom_output = tmp_path / "custom.csv"
     
@@ -206,7 +207,7 @@ def test_process_statement_custom_output(extractor, tmp_path):
         mock_pdf_reader.return_value.pages = [mock_page]
         
         # Process statement with custom output
-        extractor.process_statement(str(pdf_path), output_path=str(custom_output))
+        extractor.process_statement(str(test_pdf), output_path=str(custom_output))
         
         # Check custom output file was created
         assert custom_output.exists()
@@ -214,13 +215,8 @@ def test_process_statement_custom_output(extractor, tmp_path):
         assert 'Transaction Date' in content
         assert 'GROCERY STORE' in content
 
-def test_process_statement_debug_output(extractor, tmp_path):
+def test_process_statement_debug_output(extractor, test_pdf, tmp_path):
     """Test processing statement with debug output."""
-    # Create a temporary PDF file
-    pdf_path = tmp_path / "test.pdf"
-    with open(pdf_path, 'wb') as f:
-        f.write(b'%PDF-1.4\n')  # Write minimal PDF header
-    
     # Mock the PDF reader
     with patch('ccs_extract.PdfReader') as mock_pdf_reader:
         mock_page = MagicMock()
@@ -228,7 +224,7 @@ def test_process_statement_debug_output(extractor, tmp_path):
         mock_pdf_reader.return_value.pages = [mock_page]
         
         # Process statement
-        extractor.process_statement(str(pdf_path))
+        extractor.process_statement(str(test_pdf))
         
         # Check debug output file was created
         debug_output = tmp_path / "test_debug.txt"
@@ -386,13 +382,8 @@ def test_categorize_transaction():
     # Test unknown category
     assert categorize_transaction("UNKNOWN STORE") == "Other"
 
-def test_clean_transactions_with_categorization(extractor, tmp_path):
+def test_clean_transactions_with_categorization(extractor, test_pdf, tmp_path):
     """Test transaction cleaning with categorization."""
-    # Create a temporary PDF file
-    pdf_path = tmp_path / "test.pdf"
-    with open(pdf_path, 'wb') as f:
-        f.write(b'%PDF-1.4\n')  # Write minimal PDF header
-    
     # Mock the PDF reader
     with patch('ccs_extract.PdfReader') as mock_pdf_reader:
         mock_page = MagicMock()
@@ -400,10 +391,10 @@ def test_clean_transactions_with_categorization(extractor, tmp_path):
         mock_pdf_reader.return_value.pages = [mock_page]
         
         # Process statement
-        extractor.process_statement(str(pdf_path))
+        extractor.process_statement(str(test_pdf))
         
         # Check output file was created
-        output_path = tmp_path / "test.csv"
+        output_path = tmp_path / "output" / "test.csv"
         assert output_path.exists()
         
         # Read the CSV content
