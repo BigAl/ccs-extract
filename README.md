@@ -20,9 +20,7 @@ A Python utility for extracting transaction data from credit card statement PDFs
 - Customizable output file location
 - Normalizes merchant names
 - Categorizes transactions automatically
-- Continuous Integration and Deployment with GitHub Actions
-- Automated security scanning
-- Code quality checks
+- Docker support for containerized execution
 
 ## Requirements
 
@@ -118,12 +116,7 @@ The Docker setup will:
    pip install -e ".[dev]"
    ```
 
-4. Set up pre-commit hooks:
-   ```bash
-   pre-commit install
-   ```
-
-5. Run tests:
+4. Run tests:
    ```bash
    pytest
    ```
@@ -161,7 +154,7 @@ pre-commit run --all-files
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Run tests and ensure code quality
+4. Run tests
 5. Submit a pull request
 
 ### Release Process
@@ -249,15 +242,11 @@ Common merchant names are normalized to consistent formats. For example:
 
 ### Configuration File
 
-The script uses a JSON configuration file (`transaction_config.json`) to manage merchant patterns and transaction categories. This file is automatically created with default values if it doesn't exist.
+The script can use an optional JSON configuration file (`transaction_config.json`) to customize merchant patterns and transaction categories. If the file doesn't exist, the script will use comprehensive default patterns that cover common merchants and categories.
 
-#### Security Considerations
-
-Your `transaction_config.json` file contains personal information about your spending habits and should be kept private. The file is automatically added to `.gitignore` to prevent accidental commits.
-
-To get started:
-1. Copy the template: `cp transaction_config.template.json transaction_config.json`
-2. Edit the patterns in your copy to match your needs
+To customize the patterns:
+1. The script will create a default configuration file if none exists
+2. Edit the patterns in the file to match your needs
 3. The configuration has two main sections:
    - `merchant_patterns`: Rules for normalizing merchant names
    - `categories`: Keywords for categorizing transactions
@@ -280,19 +269,22 @@ Example category:
 ]
 ```
 
-#### Customization
+If you prefer to use the default patterns (recommended), simply delete the configuration file and the script will use its built-in comprehensive patterns.
 
-You can customize the configuration by editing `transaction_config.json`:
+### Security Considerations
 
-1. **Merchant Patterns**: Add or modify patterns to normalize merchant names
-   - `pattern`: Regular expression to match merchant names (case-insensitive)
-   - `normalized`: The standardized name to use
+#### Docker Security
+The Docker container runs with enhanced security:
+- A non-root user (`appuser`)
+- Secure file permissions:
+  - Directories: 755 (owner: rwx, group: r-x, others: r-x)
+  - Files: 644 (owner: rw-, group: r--, others: r--)
+- Write access restricted to the output directory
+- Read-only access to input and configuration files
+- No unnecessary permissions granted
 
-2. **Categories**: Add or modify transaction categories
-   - Key: Category name
-   - Value: Array of keywords to match transactions
-
-The configuration file is validated against a schema to ensure proper formatting. If the file is invalid, the script will fall back to default values.
+#### Configuration Security
+The default patterns are built into the code, eliminating the need for a separate configuration file. If you choose to use a custom configuration file, it should be kept private as it may contain information about your spending patterns. The file is automatically added to `.gitignore` to prevent accidental commits.
 
 ### Date Handling
 
@@ -350,15 +342,3 @@ Feel free to submit issues and enhancement requests!
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
-
-### Security Considerations
-
-#### Docker Security
-The Docker container runs with:
-- A non-root user (`appuser`)
-- Secure file permissions (755 for directories, 644 for files)
-- Write access only to the output directory
-- Read-only access to input and configuration files
-
-#### Configuration Security
-Your `transaction_config.json` file contains personal information about your spending habits and should be kept private. The file is automatically added to `.gitignore` to prevent accidental commits.
