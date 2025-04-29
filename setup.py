@@ -6,15 +6,25 @@ setup(
     packages=find_packages(),
     install_requires=[
         "pypdf>=3.0.0",
-        "tqdm>=4.66.0",
-        "jsonschema>=4.21.0",
+        "tqdm>=4.65.0",
+        "jsonschema>=4.17.0",
     ],
     extras_require={
-        'dev': [
-            'pytest>=8.0.0',
-            'pytest-cov>=6.0.0',
-            'coverage>=7.0.0',
+        "dev": [
+            "pytest>=8.0.0",
+            "pytest-cov>=4.1.0",
+            "flake8>=7.0.0",
+            "black>=24.1.1",
+            "isort>=5.13.2",
+            "mypy>=1.8.0",
+            "pre-commit>=3.6.0",
+            "reportlab>=4.0.0",
         ],
     },
     python_requires=">=3.13",
+    entry_points={
+        "console_scripts": [
+            "ccs-extract=ccs_extract:main",
+        ],
+    },
 ) 

@@ -1,6 +1,6 @@
-pypdf>=3.17.0
-tqdm>=4.66.0
-jsonschema>=4.21.0
+pypdf>=3.0.0
+tqdm>=4.65.0
+jsonschema>=4.17.0
 reportlab>=4.0.0
 pytest>=8.0.0
 pytest-cov>=4.1.0
