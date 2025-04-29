@@ -1,0 +1,52 @@
+[
+    {
+        "name": "High Value Groceries",
+        "pattern": "COLES|WOOLWORTHS|ALDI",
+        "category": "Groceries",
+        "priority": 2,
+        "description": "Major supermarket chains",
+        "amount_condition": {
+            "operator": ">=",
+            "value": 100.0
+        }
+    },
+    {
+        "name": "Regular Groceries",
+        "pattern": "COLES|WOOLWORTHS|ALDI",
+        "category": "Groceries",
+        "priority": 1,
+        "description": "Major supermarket chains"
+    },
+    {
+        "name": "Monthly Subscriptions",
+        "pattern": "NETFLIX|SPOTIFY|AMAZON PRIME",
+        "category": "Subscriptions",
+        "priority": 1,
+        "description": "Regular subscription services"
+    },
+    {
+        "name": "Fuel Purchases",
+        "pattern": "BP|SHELL|CALTEX",
+        "category": "Transport",
+        "priority": 1,
+        "description": "Fuel station purchases"
+    },
+    {
+        "name": "Dining Out",
+        "pattern": "RESTAURANT|CAFE|COFFEE",
+        "category": "Dining",
+        "priority": 1,
+        "description": "Restaurant and cafe purchases"
+    },
+    {
+        "name": "Special Occasion Dining",
+        "pattern": "RESTAURANT|CAFE|COFFEE",
+        "category": "Special Occasion",
+        "priority": 3,
+        "description": "High-value dining purchases",
+        "amount_condition": {
+            "operator": ">=",
+            "value": 200.0
+        }
+    }
+] 

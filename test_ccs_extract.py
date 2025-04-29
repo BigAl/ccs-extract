@@ -10,7 +10,7 @@ from unittest.mock import patch, MagicMock
 from io import StringIO
 import json
 
-from ccs_extract import StatementExtractor, main, parse_args
+from ccs_extract import CreditCardStatementExtractor, main, parse_args
 from exceptions import PDFError, TransactionExtractionError, OutputError
 from transaction_categories import normalize_merchant, categorize_transaction
 
@@ -26,11 +26,36 @@ SAMPLE_TRANSACTION_TEXT = f"""
 
 @pytest.fixture
 def extractor(tmp_path):
-    """Create a StatementExtractor instance for testing."""
+    """Create a CreditCardStatementExtractor instance for testing."""
     # Create output directory
     output_dir = tmp_path / "output"
     output_dir.mkdir()
-    return StatementExtractor(debug_mode=True, base_dir=str(tmp_path))
+    
+    # Create a test configuration file
+    config_file = tmp_path / "transaction_config.json"
+    config_file.write_text(json.dumps({
+        "categories": {
+            "Groceries": ["COLES", "WOOLWORTHS"],
+            "Transport": ["UBER", "TAXI"],
+            "Dining": ["RESTAURANT", "CAFE"]
+        }
+    }))
+    
+    # Create a test rules file
+    rules_file = tmp_path / "transaction_rules.json"
+    rules_file.write_text(json.dumps([
+        {
+            "name": "Test Rule",
+            "pattern": "TEST",
+            "category": "Test Category",
+            "priority": 1
+        }
+    ]))
+    
+    extractor = CreditCardStatementExtractor(config_file=str(config_file))
+    extractor.debug_mode = True
+    extractor.base_dir = str(tmp_path)
+    return extractor
 
 @pytest.fixture
 def test_pdf(tmp_path):
@@ -445,7 +470,7 @@ def test_main_interactive_mode(monkeypatch):
     """Test main function in interactive mode."""
     # Mock input and create a temporary PDF
     with patch('builtins.input', return_value='test.pdf'), \
-         patch('ccs_extract.StatementExtractor.process_statement'):
+         patch('ccs_extract.CreditCardStatementExtractor.process_statement'):
         # Call main without arguments
         with patch.object(sys, 'argv', ['ccs_extract.py']):
             main()
@@ -453,14 +478,14 @@ def test_main_interactive_mode(monkeypatch):
 def test_main_with_debug(monkeypatch):
     """Test main function with --debug flag."""
     # Mock process_statement
-    with patch('ccs_extract.StatementExtractor.process_statement'), \
+    with patch('ccs_extract.CreditCardStatementExtractor.process_statement'), \
          patch.object(sys, 'argv', ['ccs_extract.py', '--debug', 'test.pdf']):
         main()
 
 def test_main_with_output(monkeypatch):
     """Test main function with --output option."""
     # Mock process_statement
-    with patch('ccs_extract.StatementExtractor.process_statement'), \
+    with patch('ccs_extract.CreditCardStatementExtractor.process_statement'), \
          patch.object(sys, 'argv', ['ccs_extract.py', '--output', 'output.csv', 'test.pdf']):
         main()
 
