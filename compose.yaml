@@ -2,9 +2,9 @@ services:
   ccs-extract:
     build: .
     volumes:
-      - ./input:/app/input:Z
-      - ./output:/app/output:Z
-      - ./transaction_config.json:/app/transaction_config.json:Z
+      - ./input:/app/input:ro
+      - ./output:/app/output:rw
+      - ./transaction_config.json:/app/transaction_config.json:ro
     environment:
       - PYTHONUNBUFFERED=1
       - PYTHONPATH=/app

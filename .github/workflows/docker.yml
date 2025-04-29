@@ -44,60 +44,36 @@ jobs:
           mkdir -p input output
           # Set directory permissions to 755 (owner: rwx, group: rx, others: rx)
           chmod 755 input output
+          # Set ownership to current user
+          chown -R $USER:$USER input output
           cp transaction_config.example.json transaction_config.json
-          # Create a simple PDF for testing
-          echo "%PDF-1.4" > input/sample.pdf
-          echo "1 0 obj" >> input/sample.pdf
-          echo "<</Type /Catalog /Pages 2 0 R>>" >> input/sample.pdf
-          echo "endobj" >> input/sample.pdf
-          echo "2 0 obj" >> input/sample.pdf
-          echo "<</Type /Pages /Kids [3 0 R] /Count 1>>" >> input/sample.pdf
-          echo "endobj" >> input/sample.pdf
-          echo "3 0 obj" >> input/sample.pdf
-          echo "<</Type /Page /Parent 2 0 R /Resources <<>> /Contents 4 0 R>>" >> input/sample.pdf
-          echo "endobj" >> input/sample.pdf
-          echo "4 0 obj" >> input/sample.pdf
-          echo "<</Length 44>>" >> input/sample.pdf
-          echo "stream" >> input/sample.pdf
-          echo "BT /F1 12 Tf 100 700 Td (Sample Credit Card Statement) Tj ET" >> input/sample.pdf
-          echo "endstream" >> input/sample.pdf
-          echo "endobj" >> input/sample.pdf
-          echo "xref" >> input/sample.pdf
-          echo "0 5" >> input/sample.pdf
-          echo "0000000000 65535 f" >> input/sample.pdf
-          echo "0000000010 00000 n" >> input/sample.pdf
-          echo "0000000056 00000 n" >> input/sample.pdf
-          echo "0000000102 00000 n" >> input/sample.pdf
-          echo "0000000162 00000 n" >> input/sample.pdf
-          echo "trailer" >> input/sample.pdf
-          echo "<</Size 5 /Root 1 0 R>>" >> input/sample.pdf
-          echo "startxref" >> input/sample.pdf
-          echo "242" >> input/sample.pdf
-          echo "%%EOF" >> input/sample.pdf
-          # Set file permissions to 644 (owner: rw, group: r, others: r)
-          chmod 644 input/sample.pdf
+          # Create a simple PDF for testing using Python
+          python3 -c "
+          from reportlab.pdfgen import canvas
+          from reportlab.lib.pagesizes import letter
+          c = canvas.Canvas('input/sample.pdf', pagesize=letter)
+          c.drawString(100, 750, 'Sample Credit Card Statement')
+          c.save()
+          "
 
       - name: Run Docker Compose tests
         run: |
-          # Test basic container startup
-          docker compose -f compose.yaml run --rm ccs-extract --help
+          # Test basic container functionality
+          docker run --rm -v $(pwd)/input:/app/input:ro -v $(pwd)/output:/app/output:rw ccs-extract:latest /app/input/sample.pdf --output /app/output/sample.csv
           
-          # Test configuration validation
-          docker compose -f compose.yaml run --rm ccs-extract --validate-config
+          # Check if output file was created
+          if [ ! -f "output/sample.csv" ]; then
+            echo "Error: Output file was not created"
+            exit 1
+          fi
           
-          # Test with sample PDF
-          docker compose -f compose.yaml run --rm ccs-extract input/sample.pdf
-
-      - name: Check output directory
-        run: |
-          if [ -d "output" ]; then
-            echo "Output directory exists"
-            ls -la output/
+          # Check if output file has the correct headers
+          if ! grep -q "Transaction Date,Merchant,Category,Transaction Details,Amount" output/sample.csv; then
+            echo "Error: Output file does not contain expected headers"
+            exit 1
           fi
 
       - name: Cleanup
         if: always()
         run: |
-          docker compose -f compose.yaml down
-          rm -rf output/*
-          rm -rf input/* 
+          rm -rf input output 
