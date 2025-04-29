@@ -23,7 +23,7 @@ A Python utility for extracting transaction data from credit card statement PDFs
 
 ## Requirements
 
-- Python 3.x
+- Python 3.13+ (for enhanced date handling and type hints)
 - pypdf
 - tqdm
 - jsonschema
@@ -55,7 +55,7 @@ The virtual environment will remain active in your current shell session. You ca
 
 3. Copy the configuration template and customize it:
 ```bash
-cp transaction_config.template.json transaction_config.json
+cp transaction_config.example.json transaction_config.json
 ```
 
 4. Edit `transaction_config.json` to add your own merchant patterns and categories
@@ -75,7 +75,7 @@ mkdir -p input output
 
 3. Copy and customize the configuration:
 ```bash
-cp transaction_config.template.json transaction_config.json
+cp transaction_config.example.json input/transaction_config.json
 ```
 
 4. Build and run with Docker:
@@ -84,7 +84,13 @@ cp transaction_config.template.json transaction_config.json
 docker build -t ccs-extract .
 
 # Run the container
-docker run -v $(pwd)/input:/app/input -v $(pwd)/output:/app/output -v $(pwd)/transaction_config.json:/app/transaction_config.json ccs-extract
+docker run --rm \
+  -v $(pwd)/input:/app/input:ro \
+  -v $(pwd)/output:/app/output:rw \
+  ccs-extract:latest \
+  /app/input/statement.pdf \
+  --output /app/output/transactions.csv \
+  --config /app/input/transaction_config.json
 ```
 
 The Docker setup will:
@@ -93,32 +99,7 @@ The Docker setup will:
 - Use your configuration file
 - Process PDF files from the input directory
 - Save results to the output directory
-
-## Development
-
-### Local Development Setup
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/ccs-extract.git
-   cd ccs-extract
-   ```
-
-2. Create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install development dependencies:
-   ```bash
-   pip install -e ".[dev]"
-   ```
-
-4. Run tests:
-   ```bash
-   pytest
-   ```
+- Automatically clean up after execution (--rm flag)
 
 ### Running Tests
 
@@ -130,6 +111,17 @@ pytest
 Run tests with coverage:
 ```bash
 pytest --cov=. --cov-report=term-missing
+```
+
+Run tests with XML coverage report (for CI):
+```bash
+pytest --cov=./ --cov-report=xml
+```
+
+View coverage report in browser:
+```bash
+pytest --cov=. --cov-report=html
+open htmlcov/index.html
 ```
 
 ### Contributing
@@ -265,9 +257,15 @@ The Docker container runs with enhanced security:
 - Write access restricted to the output directory
 - Read-only access to input and configuration files
 - No unnecessary permissions granted
+- Automatic container cleanup after execution
 
 #### Configuration Security
-The default patterns are built into the code, eliminating the need for a separate configuration file. If you choose to use a custom configuration file, it should be kept private as it may contain information about your spending patterns. The file is automatically added to `.gitignore` to prevent accidental commits.
+The configuration file (`transaction_config.json`) is optional and can be used to customize merchant patterns and categories. The file is automatically added to `.gitignore` to prevent accidental commits. For security:
+
+1. Use `transaction_config.example.json` as a template
+2. Keep your custom configuration private
+3. Mount the config file as read-only in Docker
+4. The script will use built-in patterns if no config file is provided
 
 ### Date Handling
 
@@ -280,7 +278,7 @@ When a date doesn't include a year, the script:
 2. Uses the statement period to determine the correct year
 3. Falls back to the current year if no statement period is found
 
-The script is designed to be compatible with future Python versions (3.15+) by avoiding ambiguous date parsing that could trigger deprecation warnings.
+The script uses Python 3.13+ date handling features to ensure compatibility with future Python versions and avoid deprecation warnings.
 
 ### Transaction Types
 
