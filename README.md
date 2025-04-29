@@ -105,20 +105,29 @@ Common merchant names are normalized to consistent formats. For example:
 
 The script uses a JSON configuration file (`transaction_config.json`) to manage merchant patterns and transaction categories. This file is automatically created with default values if it doesn't exist.
 
+#### Security Considerations
+
+Your `transaction_config.json` file contains personal information about your spending habits and should be kept private. The file is automatically added to `.gitignore` to prevent accidental commits.
+
+To get started:
+1. Copy `transaction_config.example.json` to `transaction_config.json`
+2. Customize the patterns and categories to match your transactions
+3. Keep your `transaction_config.json` private and never commit it to version control
+
 #### File Structure
 
 ```json
 {
   "merchant_patterns": [
     {
-      "pattern": "(?i)woolworths|woolies",
-      "normalized": "Woolworths"
+      "pattern": "(?i)supermarket|grocery",
+      "normalized": "Generic Supermarket"
     },
     // ... more patterns ...
   ],
   "categories": {
-    "Groceries": ["woolworths", "coles", "aldi", ...],
-    "Dining": ["restaurant", "cafe", "coffee", ...],
+    "Groceries": ["supermarket", "grocery", ...],
+    "Dining": ["restaurant", "cafe", ...],
     // ... more categories ...
   }
 }
