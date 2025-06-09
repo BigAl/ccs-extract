@@ -9,7 +9,11 @@ import re
 from typing import Dict, List, Optional, Union
 from dataclasses import dataclass
 import json
+import logging # Added for logging
 from datetime import datetime
+
+# Set up a logger for this module
+logger = logging.getLogger(__name__)
 
 @dataclass
 class TransactionRule:
@@ -45,11 +49,22 @@ class TransactionRulesEngine:
         try:
             with open(rules_file, 'r') as f:
                 rules_data = json.load(f)
-                self.rules = [self._parse_rule(rule) for rule in rules_data]
-                # Sort rules by priority (higher priority first)
-                self.rules.sort(key=lambda x: x.priority, reverse=True)
-        except Exception as e:
-            raise ValueError(f"Failed to load rules from {rules_file}: {str(e)}")
+
+            # Parse and sort rules if data was loaded
+            self.rules = [self._parse_rule(rule) for rule in rules_data]
+            self.rules.sort(key=lambda x: x.priority, reverse=True)
+            logger.info(f"Successfully loaded {len(self.rules)} rules from {rules_file}.")
+
+        except FileNotFoundError:
+            logger.warning(f"Custom transaction rules file '{rules_file}' not found. "
+                           "No custom rules will be loaded.")
+            # self.rules remains empty as initialized in __init__
+        except json.JSONDecodeError as e:
+            logger.error(f"Error decoding JSON from rules file '{rules_file}': {e}")
+            raise ValueError(f"Invalid JSON in rules file {rules_file}: {str(e)}")
+        except Exception as e: # Catch any other unexpected errors during rule parsing
+            logger.error(f"Failed to parse rules from '{rules_file}': {e}")
+            raise ValueError(f"Failed to parse rules from {rules_file}: {str(e)}")
     
     def _parse_rule(self, rule_data: Dict) -> TransactionRule:
         """Parse a single rule from dictionary data.

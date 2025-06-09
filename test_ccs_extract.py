@@ -61,6 +61,10 @@ def extractor(tmp_path):
     extractor = CreditCardStatementExtractor(config_file=str(config_file))
     extractor.debug_mode = True
     extractor.base_dir = str(tmp_path)
+    # Ensure parsing_patterns.json does not exist for this default fixture run
+    parsing_patterns_file = tmp_path / "parsing_patterns.json"
+    if parsing_patterns_file.exists():
+        parsing_patterns_file.unlink()
     return extractor
 
 @pytest.fixture
@@ -472,4 +476,234 @@ def test_process_statement_with_no_transactions(extractor, test_pdf, tmp_path):
         output_path = tmp_path / "output" / "test.csv"
         assert output_path.exists()
         content = output_path.read_text()
-        assert len(content.splitlines()) == 1  # Only header 
+        assert len(content.splitlines()) == 1  # Only header
+
+
+# --- Tests for Configuration Management Changes ---
+
+def test_init_with_missing_transaction_config_file(tmp_path, monkeypatch):
+    """Test extractor initialization with transaction_config.json missing."""
+    config_file_path = tmp_path / "transaction_config.json" # Default path
+    if config_file_path.exists(): # Ensure it's not there from other tests
+        config_file_path.unlink()
+
+    # Ensure other default config files also don't exist to isolate this test
+    rules_file_path = tmp_path / "transaction_rules.json"
+    if rules_file_path.exists(): rules_file_path.unlink()
+    parsing_patterns_file = tmp_path / "parsing_patterns.json"
+    if parsing_patterns_file.exists(): parsing_patterns_file.unlink()
+
+    mock_log_warning = MagicMock()
+    # The logger is in 'transaction_categories' module
+    monkeypatch.setattr("transaction_categories.logger.warning", mock_log_warning)
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path) # Change CWD so default file paths are sought in tmp_path
+    try:
+        # Initialize extractor - it will try to load 'transaction_config.json' by default
+        # Pass the explicit path to be sure it's the one being checked
+        extractor_instance = CreditCardStatementExtractor(config_file=str(config_file_path))
+
+        mock_log_warning.assert_called_once_with(
+            f"Custom transaction configuration file '{str(config_file_path)}' not found. "
+            "Using standard defaults only."
+        )
+        # Check that it loaded the standard defaults
+        assert extractor_instance.config["merchant_patterns"] == STANDARD_MERCHANT_PATTERNS
+        assert extractor_instance.config["categories"] == STANDARD_CATEGORIES
+    finally:
+        os.chdir(original_cwd)
+
+def test_init_with_missing_transaction_rules_file(tmp_path, monkeypatch):
+    """Test TransactionRulesEngine initialization when transaction_rules.json is missing."""
+    rules_file_path = tmp_path / "transaction_rules.json" # Default path for rules engine
+    if rules_file_path.exists(): # Ensure it's not there
+        rules_file_path.unlink()
+
+    # Dummy transaction_config.json is needed for CreditCardStatementExtractor init
+    config_file_for_extractor = tmp_path / "extractor_config.json"
+    config_file_for_extractor.write_text(json.dumps({"merchant_patterns": [], "categories": {}}))
+
+    # Ensure parsing_patterns.json does not exist
+    parsing_patterns_file = tmp_path / "parsing_patterns.json"
+    if parsing_patterns_file.exists(): parsing_patterns_file.unlink()
+
+
+    mock_log_warning = MagicMock()
+    # The logger is in 'transaction_rules' module
+    monkeypatch.setattr("transaction_rules.logger.warning", mock_log_warning)
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path) # Change CWD so CCS_Extract looks for rules file here by default
+    try:
+        # CCS_Extract initializes TransactionRulesEngine with "transaction_rules.json"
+        extractor_instance = CreditCardStatementExtractor(config_file=str(config_file_for_extractor))
+
+        mock_log_warning.assert_called_once_with(
+            f"Custom transaction rules file 'transaction_rules.json' not found. "
+            "No custom rules will be loaded."
+        )
+        assert extractor_instance.rules_engine.rules == []
+    finally:
+        os.chdir(original_cwd)
+
+
+def test_load_custom_parsing_patterns(tmp_path, monkeypatch):
+    """Test loading of custom transaction parsing patterns from parsing_patterns.json."""
+    custom_patterns_json_path = tmp_path / "parsing_patterns.json" # Default path
+    custom_pattern_list = [
+        {
+            "name": "custom_test_pattern",
+            "pattern": "CUSTOM_REGEX_(\\d+)",
+            "groups": {"data": 1, "amount": 0, "date": 0, "description":0}
+        }
+    ]
+    custom_patterns_json_path.write_text(json.dumps(custom_pattern_list))
+
+    mock_log_info = MagicMock()
+    monkeypatch.setattr("ccs_extract.logger.info", mock_log_info)
+
+    # Dummy transaction_config.json
+    config_file_for_extractor = tmp_path / "extractor_config.json"
+    config_file_for_extractor.write_text(json.dumps({"merchant_patterns": [], "categories": {}}))
+    # Ensure no transaction_rules.json
+    rules_file_path = tmp_path / "transaction_rules.json"
+    if rules_file_path.exists(): rules_file_path.unlink()
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        extractor_instance = CreditCardStatementExtractor(config_file=str(config_file_for_extractor))
+
+        mock_log_info.assert_any_call(
+            f"Successfully loaded 1 custom parsing patterns from 'parsing_patterns.json'."
+        )
+        assert len(extractor_instance.transaction_patterns) == 1
+        assert extractor_instance.transaction_patterns[0]["name"] == "custom_test_pattern"
+        assert isinstance(extractor_instance.transaction_patterns[0]["pattern"], re.Pattern)
+        assert extractor_instance.transaction_patterns[0]["pattern"].pattern == "CUSTOM_REGEX_(\\d+)"
+
+        test_text = "Some text CUSTOM_REGEX_123 more text"
+        match = extractor_instance.transaction_patterns[0]["pattern"].search(test_text)
+        assert match is not None
+        assert match.group(1) == "123"
+    finally:
+        os.chdir(original_cwd)
+
+
+def test_fallback_to_default_parsing_patterns_if_missing(tmp_path, monkeypatch):
+    """Test fallback to default parsing patterns if parsing_patterns.json is missing."""
+    parsing_patterns_file_path = tmp_path / "parsing_patterns.json"
+    if parsing_patterns_file_path.exists():
+        parsing_patterns_file_path.unlink()
+
+    mock_log_warning = MagicMock()
+    monkeypatch.setattr("ccs_extract.logger.warning", mock_log_warning)
+
+    config_file_for_extractor = tmp_path / "extractor_config.json"
+    config_file_for_extractor.write_text(json.dumps({"merchant_patterns": [], "categories": {}}))
+    rules_file_path = tmp_path / "transaction_rules.json"
+    if rules_file_path.exists(): rules_file_path.unlink()
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        extractor_instance = CreditCardStatementExtractor(config_file=str(config_file_for_extractor))
+
+        mock_log_warning.assert_any_call(
+            "Custom parsing patterns file 'parsing_patterns.json' not found. Using default patterns from config.py."
+        )
+        assert extractor_instance.transaction_patterns == DEFAULT_TRANSACTION_PATTERNS
+    finally:
+        os.chdir(original_cwd)
+
+
+def test_fallback_to_default_parsing_patterns_if_malformed_json(tmp_path, monkeypatch):
+    """Test fallback if parsing_patterns.json is malformed (invalid JSON)."""
+    parsing_patterns_file_path = tmp_path / "parsing_patterns.json"
+    parsing_patterns_file_path.write_text("this is not valid json {")
+
+    mock_log_error = MagicMock()
+    monkeypatch.setattr("ccs_extract.logger.error", mock_log_error)
+
+    config_file_for_extractor = tmp_path / "extractor_config.json"
+    config_file_for_extractor.write_text(json.dumps({"merchant_patterns": [], "categories": {}}))
+    rules_file_path = tmp_path / "transaction_rules.json"
+    if rules_file_path.exists(): rules_file_path.unlink()
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        extractor_instance = CreditCardStatementExtractor(config_file=str(config_file_for_extractor))
+
+        assert mock_log_error.call_count >= 1
+        args, _ = mock_log_error.call_args_list[0] # Check the first error log
+        assert "Error loading or validating custom parsing patterns from 'parsing_patterns.json'" in args[0]
+        assert "Using default patterns." in args[0]
+
+        assert extractor_instance.transaction_patterns == DEFAULT_TRANSACTION_PATTERNS
+    finally:
+        os.chdir(original_cwd)
+
+def test_fallback_to_default_parsing_patterns_if_invalid_structure(tmp_path, monkeypatch):
+    """Test fallback if parsing_patterns.json has valid JSON but invalid structure (not a list)."""
+    parsing_patterns_file_path = tmp_path / "parsing_patterns.json"
+    parsing_patterns_file_path.write_text(json.dumps({"not_a_list": "this is a dict"}))
+
+    mock_log_error = MagicMock()
+    monkeypatch.setattr("ccs_extract.logger.error", mock_log_error)
+
+    config_file_for_extractor = tmp_path / "extractor_config.json"
+    config_file_for_extractor.write_text(json.dumps({"merchant_patterns": [], "categories": {}}))
+    rules_file_path = tmp_path / "transaction_rules.json"
+    if rules_file_path.exists(): rules_file_path.unlink()
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        extractor_instance = CreditCardStatementExtractor(config_file=str(config_file_for_extractor))
+
+        mock_log_error.assert_any_call(
+            "Error loading or validating custom parsing patterns from 'parsing_patterns.json': "
+            "Parsing patterns JSON must be a list.. Using default patterns."
+        )
+        assert extractor_instance.transaction_patterns == DEFAULT_TRANSACTION_PATTERNS
+    finally:
+        os.chdir(original_cwd)
+
+def test_fallback_to_default_parsing_patterns_if_invalid_item_structure(tmp_path, monkeypatch):
+    """Test fallback if parsing_patterns.json has items with invalid structure."""
+    parsing_patterns_file_path = tmp_path / "parsing_patterns.json"
+    # List of objects, but objects miss required keys like 'pattern'
+    invalid_patterns_list = [{"name": "test_pattern_missing_keys", "groups": {}}]
+    parsing_patterns_file_path.write_text(json.dumps(invalid_patterns_list))
+
+    mock_log_error = MagicMock()
+    monkeypatch.setattr("ccs_extract.logger.error", mock_log_error)
+
+    config_file_for_extractor = tmp_path / "extractor_config.json"
+    config_file_for_extractor.write_text(json.dumps({"merchant_patterns": [], "categories": {}}))
+    rules_file_path = tmp_path / "transaction_rules.json"
+    if rules_file_path.exists(): rules_file_path.unlink()
+
+    original_cwd = os.getcwd()
+    os.chdir(tmp_path)
+    try:
+        extractor_instance = CreditCardStatementExtractor(config_file=str(config_file_for_extractor))
+
+        mock_log_error.assert_any_call(
+            "Error loading or validating custom parsing patterns from 'parsing_patterns.json': "
+            "Invalid pattern structure in JSON.. Using default patterns."
+        )
+        assert extractor_instance.transaction_patterns == DEFAULT_TRANSACTION_PATTERNS
+    finally:
+        os.chdir(original_cwd)
+
+# Ensure existing tests that rely on the 'extractor' fixture still run correctly.
+# The fixture is modified to ensure parsing_patterns.json does not exist by default,
+# so those tests will use default parsing patterns.
+# The fixture creates transaction_config.json and transaction_rules.json,
+# so tests for those specific custom configs will still work as intended.
+# The chdir in the main fixture ensures default config files are sought in tmp_path.
+# Individual tests that need to control specific config files should manage them within tmp_path
+# and potentially use chdir as well if testing CCS_Extract's direct use of default filenames.

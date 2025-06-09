@@ -6,10 +6,14 @@ import re
 import json
 import os
 import argparse
+import logging # Added for logging
 from typing import Dict, List, Tuple
 from jsonschema import validate, ValidationError
 
 from australian_merchants import STANDARD_MERCHANT_PATTERNS, STANDARD_CATEGORIES
+
+# Set up a logger for this module
+logger = logging.getLogger(__name__)
 
 # JSON schema for configuration validation
 CONFIG_SCHEMA = {
@@ -49,21 +53,21 @@ def load_custom_config(config_file: str = None) -> Tuple[List[Tuple[str, str]], 
         - Dictionary of categories and their keywords
         
     Raises:
-        FileNotFoundError: If the config file does not exist
         json.JSONDecodeError: If the config file is not valid JSON
         ValidationError: If the config file does not match the required schema
     """
     if config_file is None:
         config_file = os.path.join(os.path.dirname(__file__), 'transaction_config.json')
     
-    if not os.path.exists(config_file):
-        raise FileNotFoundError(f"Configuration file not found: {config_file}")
-    
     try:
         with open(config_file, 'r') as f:
             config = json.load(f)
+    except FileNotFoundError:
+        logger.warning(f"Custom transaction configuration file '{config_file}' not found. "
+                       "Using standard defaults only.")
+        return STANDARD_MERCHANT_PATTERNS, STANDARD_CATEGORIES
     except json.JSONDecodeError as e:
-        raise json.JSONDecodeError(f"Invalid JSON in configuration file: {e}", e.doc, e.pos)
+        raise json.JSONDecodeError(f"Invalid JSON in configuration file '{config_file}': {e}", e.doc, e.pos)
     
     # Validate configuration against schema
     try:

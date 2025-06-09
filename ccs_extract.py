@@ -27,6 +27,7 @@ try:
         DEBUG_SETTINGS,
         FILE_SETTINGS
     )
+    # Attempt to import core functional modules. If these fail, the script cannot run.
     from logger import setup_logger
     from exceptions import (
         StatementExtractorError,
@@ -36,56 +37,16 @@ try:
         OutputError
     )
     from transaction_rules import TransactionRulesEngine
-except ImportError:
-    # Fallback to default values if modules are not available
-    DATE_FORMATS = {
-        'input': '%d %b %Y',  # Updated to include year
-        'output': '%d/%m/%Y'
-    }
-    TRANSACTION_PATTERNS = [
-        {
-            'name': 'standard',
-            'pattern': re.compile(r'(\d{1,2} [A-Za-z]{3} \d{4}) \$([\d,.]+)(.+)'),  # Updated to include year
-            'groups': {
-                'date': 1,
-                'amount': 2,
-                'description': 3
-            }
-        }
-    ]
-    CSV_SETTINGS = {
-        'fieldnames': ['Transaction Date', 'Transaction Details', 'Amount'],
-        'delimiter': ',',
-        'quotechar': '"',
-        'quoting': 'QUOTE_MINIMAL'
-    }
-    DEBUG_SETTINGS = {
-        'sample_text_length': 500,
-        'page_separator': '--- PAGE {} ---\n'
-    }
-    FILE_SETTINGS = {
-        'encoding': 'utf-8',
-        'output_suffix': '_transactions.csv',
-        'debug_suffix': '_debug.txt'
-    }
-    
-    # Simple logging setup if logger module is not available
-    import logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        datefmt='%Y-%m-%d %H:%M:%S'
-    )
-    setup_logger = lambda name: logging.getLogger(name)
-    
-    # Simple exception classes if exceptions module is not available
-    class StatementExtractorError(Exception): pass
-    class PDFError(StatementExtractorError): pass
-    class TransactionExtractionError(StatementExtractorError): pass
-    class ValidationError(StatementExtractorError): pass
-    class OutputError(StatementExtractorError): pass
+except ImportError as e:
+    # If core modules like config, logger, or exceptions are missing,
+    # it's a fundamental issue. Log a critical error and exit.
+    # A simple print is used here as logger might not be available.
+    print(f"Critical Error: Failed to import core modules: {e}. "
+          "Please ensure all modules (config.py, logger.py, exceptions.py) are correctly installed.", file=sys.stderr)
+    sys.exit(1)
 
 # Set up logger
+# This line is now guaranteed to work, or the script would have exited.
 logger = setup_logger(__name__)
 
 class CreditCardStatementExtractor:
@@ -99,14 +60,51 @@ class CreditCardStatementExtractor:
         """
         self.config = self._load_config(config_file)
         self.rules_engine = TransactionRulesEngine("transaction_rules.json")
+        # Load transaction parsing patterns
+        self.transaction_patterns = self._load_parsing_patterns("parsing_patterns.json")
         self.debug_mode = False
         self.logger = logger
         self.current_year = datetime.now().year
         self.statement_text = ""
         self.base_dir = os.getcwd()
-    
+
+    def _load_parsing_patterns(self, patterns_file: str) -> List[Dict[str, Any]]:
+        """Load transaction parsing patterns from JSON file or use defaults."""
+        try:
+            with open(patterns_file, 'r') as f:
+                custom_patterns_data = json.load(f)
+
+            # Validate basic structure and compile regex
+            loaded_patterns = []
+            if not isinstance(custom_patterns_data, list):
+                raise ValueError("Parsing patterns JSON must be a list.")
+
+            for p_data in custom_patterns_data:
+                if not isinstance(p_data, dict) or \
+                   'name' not in p_data or \
+                   'pattern' not in p_data or \
+                   'groups' not in p_data:
+                    raise ValueError("Invalid pattern structure in JSON.")
+
+                # Compile the regex pattern
+                p_data['pattern'] = re.compile(p_data['pattern'])
+                loaded_patterns.append(p_data)
+
+            self.logger.info(f"Successfully loaded {len(loaded_patterns)} custom parsing patterns from '{patterns_file}'.")
+            return loaded_patterns
+        except FileNotFoundError:
+            self.logger.warning(f"Custom parsing patterns file '{patterns_file}' not found. Using default patterns from config.py.")
+            # TRANSACTION_PATTERNS is imported from config.py
+            return TRANSACTION_PATTERNS
+        except (json.JSONDecodeError, ValueError) as e:
+            self.logger.error(f"Error loading or validating custom parsing patterns from '{patterns_file}': {e}. Using default patterns.")
+            return TRANSACTION_PATTERNS
+        except Exception as e:
+            self.logger.error(f"Unexpected error loading custom parsing patterns from '{patterns_file}': {e}. Using default patterns.")
+            return TRANSACTION_PATTERNS
+
     def _load_config(self, config_file: str) -> dict:
-        """Load configuration from a file.
+        """Load transaction categorization configuration from a file.
         
         Args:
             config_file: Path to the transaction configuration file
@@ -124,8 +122,9 @@ class CreditCardStatementExtractor:
                 "merchant_patterns": merchant_patterns,
                 "categories": categories
             }
-        except (FileNotFoundError, json.JSONDecodeError, ValidationError) as e:
-            raise StatementExtractorError(f"Error loading configuration: {str(e)}")
+        # FileNotFoundError is now handled within load_custom_config
+        except (json.JSONDecodeError, ValidationError) as e:
+            raise StatementExtractorError(f"Error loading transaction configuration from '{config_file}': {str(e)}")
     
     def validate_pdf(self, pdf_path: str) -> None:
         """
@@ -196,7 +195,7 @@ class CreditCardStatementExtractor:
             # Process each line to find transactions
             for line in text.split('\n'):
                 # Try each configured pattern
-                for pattern_config in TRANSACTION_PATTERNS:
+                for pattern_config in self.transaction_patterns: # Use instance variable
                     match = pattern_config['pattern'].search(line)
                     if match:
                         # Extract transaction data using pattern groups

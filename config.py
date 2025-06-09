@@ -12,7 +12,8 @@ DATE_FORMATS = {
     'output': '%d/%m/%Y'  # Desired output format
 }
 
-# Transaction patterns
+# Default Transaction parsing patterns.
+# These are used if 'parsing_patterns.json' is not found or is invalid.
 TRANSACTION_PATTERNS: List[Dict[str, Pattern]] = [
     {
         'name': 'standard_with_year',

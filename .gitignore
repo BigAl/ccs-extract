@@ -54,6 +54,7 @@ Thumbs.db
 
 # Personal configuration
 transaction_config.json
+parsing_patterns.json
 
 # Coverage
 .coverage
